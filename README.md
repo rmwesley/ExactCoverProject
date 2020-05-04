@@ -1,9 +1,9 @@
 # INF421-Exact-Cover
-This is a Student project by professor Vincent Pilaud during Polytechnique's INF421 course.
-The objective is to make a generator for Polyominos from some data as well as a generator for an exact cover problem matrix and its solver.
-This leaves us 3 steps to generate the problems and arrive at their solution.
+This is a Student project by professor Vincent Pilaud who taught us during Polytechnique's INF421 course.
+The objective was to make a generator for Polyominos from some given data as well as a generator for an exact cover problem matrix and its solver.
+This leaves us with 3 steps to generate the problems and arrive at their solution.
 
-The entire program was coded in Java, using as instruction the Dancing Links article of D. Knuth and also a more straightforward, less memory consuming but generally less efficient solution, based on a pseudo code from our project description.
+The entire program was coded in Java, using as instructions the Dancing Links article of D. Knuth and also a more straightforward, less memory consuming but generally less efficient solution, based on a pseudo code from our project description.
 The generator of the Polyominoes was coded by my colleague Sami Amrani.
 The project provided us the files Image2d.java and an illustration ExampleImage2d.java for us to visualize our Polyominoes from their grids and check them.
 The generator of the exact cover problem along with it's solver was coded by me, Wesley Rodrigues Machado.
