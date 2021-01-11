@@ -1,4 +1,6 @@
 # INF421-Exact-Cover
+The current version has several file path issues (The current version uses my local machine's directories to the archives)
+
 This is a Student project by professor Vincent Pilaud who taught us during Polytechnique's INF421 course.
 The objective was to make a generator for Polyominos from some given data as well as a generator for an exact cover problem matrix and its solver.
 This leaves us with 3 steps to generate the problems and arrive at their solution.
