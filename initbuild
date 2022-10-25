@@ -1,0 +1,1 @@
+javac -cp .:bin/ src/Column.java src/Node.java src/Edge.java src/ColoredPolygon.java -d bin/

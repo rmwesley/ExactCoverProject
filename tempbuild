@@ -1,0 +1,1 @@
+javac -cp .:bin/ src/DancingLinks.java src/Polyomino.java src/Main.java src/Test.java src/Image2dViewer.java src/Image2d.java -d bin/
