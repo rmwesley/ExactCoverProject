@@ -1,5 +1,7 @@
 import javax.swing.JFrame;
-
+import javax.swing.JScrollPane;
+import javax.swing.JPanel;
+import javax.swing.ScrollPaneLayout;
 
 //Frame for the vizualization
 class Image2dViewer extends JFrame {
@@ -12,7 +14,16 @@ class Image2dViewer extends JFrame {
 		this.img = img;
 		this.setLocation(xLocation, 0);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		add(new Image2dComponent(img));
+
+		Image2dComponent img2d = new Image2dComponent(img);
+
+		JPanel container = new JPanel();
+		JScrollPane scrPane = new JScrollPane(container);
+		getContentPane().add(scrPane);
+		scrPane.setLayout(new ScrollPaneLayout());
+
+		container.add(img2d);
+
 		pack();
 		setVisible(true);
 		xLocation += img.dimension.width;
