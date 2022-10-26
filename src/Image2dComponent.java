@@ -14,7 +14,7 @@ class Image2dComponent extends JComponent {
 
 	public Image2dComponent(Image2d img) {
 		this.img = img;
-		setPreferredSize(new Dimension(img.getWidth(), img.getHeight()));
+		setPreferredSize(img.dimension);
 	}
 	
 	public void paint(Graphics g) {
@@ -22,13 +22,15 @@ class Image2dComponent extends JComponent {
 
 		// set the background color
 		Dimension d = getSize();
-     g2.setBackground(Color.white);
-     g2.clearRect(0,0,d.width,d.height);
-     //g2.scale(25, 25);           // IMPORTANT : I decided to zoom a little bit in order to see something on the screen !!!!!
-     
-     // draw the polygons
-		synchronized (img.getColoredPolygons()) {
-			for (ColoredPolygon coloredPolygon : img.getColoredPolygons()) {
+		//g2.setBackground(Color.white);
+		//g2.clearRect(0,0,d.width,d.height);
+		int s=10;
+		g2.translate(0,200);
+		g2.scale(s, -s);
+
+		// draw the polygons
+		synchronized (img.coloredPolygons) {
+			for (ColoredPolygon coloredPolygon : img.coloredPolygons) {
 				g2.setColor(coloredPolygon.color);
 				g2.fillPolygon(coloredPolygon.polygon);
 				g2.drawPolygon(coloredPolygon.polygon);
@@ -37,10 +39,10 @@ class Image2dComponent extends JComponent {
 		
 		// draw the edges
 		g2.setColor(Color.white);
-		synchronized (img.getEdges()) {
-			for (Edge edge : img.getEdges()) {
-             g2.setStroke(new BasicStroke(edge.width));
-             g2.drawLine(edge.x1, edge.y1, edge.x2, edge.y2);
+		synchronized (img.edges) {
+			for (Edge edge : img.edges) {
+				g2.setStroke(new BasicStroke(edge.width));
+				g2.drawLine(edge.x1, edge.y1, edge.x2, edge.y2);
 			}
 		}
 	}

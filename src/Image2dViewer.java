@@ -15,9 +15,7 @@ class Image2dViewer extends JFrame {
 		add(new Image2dComponent(img));
 		pack();
 		setVisible(true);
-		xLocation += img.getWidth();
-	
+		xLocation += img.dimension.width;
 	}
-	
 }
 

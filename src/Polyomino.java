@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 
 
@@ -57,15 +58,15 @@ public class Polyomino {
 	
 	public static int[][][] creator(Polyomino polyomino, int xOrigin, int yOrigin) {
 		
-		// Determins the coordinates of the squares of the polyomino relatively to the new origin
+		// Determines the coordinates of the squares of the polyomino relatively to the new origin
 
 		int[][] coordinates = new int[2][polyomino.n];
 		int k = 0;
 		for (int i = 0; i < polyomino.width; i++) {
 			for (int j = 0; j < polyomino.height; j++) {
 				if (polyomino.grid[i][j]) {
-					coordinates[0][k] = i+xOrigin;
-					coordinates[1][k] = j+yOrigin;
+					coordinates[0][k] = 2*i+xOrigin;
+					coordinates[1][k] = 2*j+yOrigin;
 					k = k + 1;
 				}
 			}
@@ -92,7 +93,7 @@ public class Polyomino {
 	
 	// Dilates a polyomino by a factor n. Extremely useful to draw polyominos (because the Image.Scale method tends to deform them)
 	
-	public Polyomino dilatateBy(int n) {
+	public Polyomino dilateBy(int n) {
 		boolean[][] newGrid = new boolean[n * this.width][n * this.height];
 		for (int i = 0; i < this.width; i++) {
 			for (int j = 0; j < this.height; j++) {
@@ -129,7 +130,7 @@ public class Polyomino {
 
 	public Polyomino(String s) {
 
-		HashSet<Integer[]> squareList = new HashSet<Integer[]>();
+		HashSet<Integer[]> squares = new HashSet<Integer[]>();
 		int i = 1; 
 		
 		// we get through the string, we begin just after '{'
@@ -151,21 +152,21 @@ public class Polyomino {
 			}
 			// we add the coordinates to our list of coordinates
 			Integer[] point = { x, y };
-			squareList.add(point);
+			squares.add(point);
 			i++;
 			if (s.charAt(i) == ',')
 				i = i + 2;
 			else
 				break;
 		}
-		// we convert our list of coordinated into a boolean grid
+		// we convert our list of coordinates into a boolean grid
 		int xmax = 0, ymax = 0;
-		for (Integer[] tile : squareList) {
+		for (Integer[] tile : squares) {
 			xmax = Math.max(xmax, tile[0]);
 			ymax = Math.max(ymax, tile[1]);
 		}
 		boolean[][] tilesArray = new boolean[xmax + 1][ymax + 1];
-		for (Integer[] tile : squareList) {
+		for (Integer[] tile : squares) {
 			tilesArray[tile[0]][tile[1]] = true;
 		}
 		this.grid = tilesArray;
@@ -181,13 +182,14 @@ public class Polyomino {
 	// Here we define a method that returns an array of polyominos from a file
 	
 	public static Polyomino[] fileReader(String filename) {
-		HashSet<Polyomino> polyominoList = new HashSet<Polyomino>();
+		LinkedList<Polyomino> polyominoList = new LinkedList<Polyomino>();
 		BufferedReader reader;
 			try {
 				reader = new BufferedReader(new FileReader(filename));
 				String line = reader.readLine();
 				while (line != null) {
 					Polyomino polyo = new Polyomino(line);
+					//polyominoList.add(polyo.symmetrical());
 					polyominoList.add(polyo);
 					line = reader.readLine();
 				}
@@ -369,30 +371,20 @@ public class Polyomino {
 		return polyominos;
 	}
 	
-	
-	
-	
-	
-	// Tells us whether a given square is contained inside a Polyomino
-	
-	public static boolean containsSquare(Polyomino polyomino, int[] square) {
-		if (square[0] >= polyomino.width || square[1] >= polyomino.height || square[0] < 0 || square[1] < 0) {
+	// Tells us whether a given square is contained inside the Polyomino
+	public boolean containsSquare(int[] square) {
+		if (square[0] >= this.width || square[1] >= this.height || square[0] < 0 || square[1] < 0) {
 			return false;
 		}
 		else {
-		    return polyomino.grid[square[0]][square[1]];
+			return this.grid[square[0]][square[1]];
 		}
 	}
-	
-	
-	
-	
-	
+
 	// An auxiliary function that adds a square to a polyomino, and is key to implement an algorithm that generates polyominos
-	
-	public static Polyomino addSquare(Polyomino polyomino, int[] square) {
-		if (Polyomino.containsSquare(polyomino, square)) {
-			return polyomino;
+	public Polyomino addSquare(int[] square) {
+		if (this.containsSquare(square)) {
+			return this;
 		}		
 		int a = 0;
 		int b = 0;
@@ -401,19 +393,19 @@ public class Polyomino {
 		if (square[0] < 0) { 
 			a = 1;
 		}
-		if (square[0] >= polyomino.width) {
+		if (square[0] >= this.width) {
 			b = 1;
 		}
 		if (square[1] < 0) {
 			c = 1;
 		}
-		if (square[1] >= polyomino.height) {
+		if (square[1] >= this.height) {
 			d = 1;
 		}
-		boolean[][] newGrid = new boolean[polyomino.width + a + b][polyomino.height + c + d];
-		for (int i = 0; i < polyomino.width; i++) {
-			for (int j = 0; j < polyomino.height; j++) {
-				newGrid[a + i][c + j] = polyomino.grid[i][j];
+		boolean[][] newGrid = new boolean[this.width + a + b][this.height + c + d];
+		for (int i = 0; i < this.width; i++) {
+			for (int j = 0; j < this.height; j++) {
+				newGrid[a + i][c + j] = this.grid[i][j];
 			}
 		}
 		newGrid[square[0] + a][square[1] + c] = true;
@@ -423,10 +415,10 @@ public class Polyomino {
 	
 	
 	
-	// An auxiliary function that returns a list containing all the polyominos with one new square adjacent to them
+	// An auxiliary function that returns a list containing all the polyominoes with one new square adjacent to them
 	
-	public HashSet<Polyomino> Neighbors(Polyomino this) {
-		HashSet<Polyomino> polyominos = new HashSet<Polyomino>();
+	public HashSet<Polyomino> neighbors() {
+		HashSet<Polyomino> polyominoes = new HashSet<Polyomino>();
 		for (int i = 0; i < this.width; i++) {
 			for (int j = 0; j < this.height; j++) {
 				if (this.grid[i][j]) {
@@ -434,14 +426,14 @@ public class Polyomino {
 					for (int k = 0; k < 4; k++)
 					{
 						int[] square = squares[k];
-						if(!containsSquare(this, square)) {
-							polyominos.add(addSquare(this,square));
+						if(!this.containsSquare(square)) {
+							polyominoes.add(this.addSquare(square));
 						}
 					}
 				}
 			}
 		}
-		return polyominos;
+		return polyominoes;
 	}
 	
 	
@@ -450,17 +442,17 @@ public class Polyomino {
 	
 	// A naive algorithm that generates all fixed Polyominos
 	
-	public static HashSet<Polyomino> generateFixed(int n) {
+	public static HashSet<Polyomino> naiveGenerateFixed(int n) {
 		if (n == 1) {
 			HashSet<Polyomino> polyominos = new HashSet<Polyomino>();
 			polyominos.add(new Polyomino("[(0,0)]")); 
 			return polyominos;
 		} 
 		else {
-			HashSet<Polyomino> polyominos1 = generateFixed(n - 1);
+			HashSet<Polyomino> polyominos1 = naiveGenerateFixed(n - 1);
 			HashSet<Polyomino> polyominos = new HashSet<Polyomino>();
 			for (Polyomino P : polyominos1) {
-				for (Polyomino P2 : P.Neighbors()) {
+				for (Polyomino P2 : P.neighbors()) {
 					polyominos.add(P2);
 				}
 			}
@@ -488,17 +480,17 @@ public class Polyomino {
 	
 	// A naive algorithm that generates all free polyominos
 	
-		public static HashSet<Polyomino> generateFree(int n) {
+		public static HashSet<Polyomino> naiveGenerateFree(int n) {
 			if (n == 1) {
 				HashSet<Polyomino> polys = new HashSet<Polyomino>();
 				polys.add(new Polyomino("[(0,0)]"));
 				return polys;
 			} 
 			else {
-				HashSet<Polyomino> polys1 = generateFree(n - 1);
+				HashSet<Polyomino> polys1 = naiveGenerateFree(n - 1);
 				HashSet<Polyomino> polys = new HashSet<Polyomino>();
 				for (Polyomino P : polys1) {
-					for (Polyomino P2 : P.Neighbors()) {
+					for (Polyomino P2 : P.neighbors()) {
 						if ((!polys.contains(P2)) && intersectionEmpty(polys, P2.returnFixed())) {
 							polys.add(P2);
 						}
@@ -682,7 +674,7 @@ public class Polyomino {
 		// Returns the exact cover problem of this and a HashSet of polyominoes L, allowing repetitions of elements of L
 		public int[][] toMatrix(HashSet<Polyomino> L) {
 			int[][] M = new int[0][this.n];
-			//LinkedList<Polyomino> L = generateFixed(k);
+			//LinkedList<Polyomino> L = naiveGenerateFixed(k);
 
 			for (Polyomino p : L) {
 				 for (int x = 0; x < height; x++) {
@@ -731,7 +723,7 @@ public class Polyomino {
 
 			// Returning the representation of each Node (Row of the problem matrix) as a boolean matrix, which can be used to visualize each solution with different functions (toString or PrintTiling)
 			for (HashSet<Node> solution : NodeList) {
-				HashSet Set = new HashSet<boolean[][]>();
+				HashSet<boolean[][]> Set = new HashSet<boolean[][]>();
 				for (Node x : solution) {
 					boolean[][] S = PositiontoCoordinates(N, reduce(M[x.locator], this.n));
 					if(S.length == 0) {
@@ -759,7 +751,7 @@ public class Polyomino {
 			HashSet<HashSet<boolean[][]>> Solution = new HashSet<HashSet<boolean[][]>>();
 
 			for (HashSet<Integer> solution : List) {
-				HashSet Set = new HashSet<boolean[][]>();
+				HashSet<boolean[][]> Set = new HashSet<boolean[][]>();
 				for (Integer x : solution) {
 					boolean[][] S = PositiontoCoordinates(N, reduce(M[x], this.n));
 					if(S.length == 0) {
@@ -787,7 +779,7 @@ public class Polyomino {
 			HashSet<HashSet<boolean[][]>> Solution = new HashSet<HashSet<boolean[][]>>();
 
 			for (HashSet<Node> solution : NodeList) {
-				HashSet Set = new HashSet<boolean[][]>();
+				HashSet<boolean[][]> Set = new HashSet<boolean[][]>();
 				for (Node x : solution) {
 					boolean[][] S = PositiontoCoordinates(N, reduce(M[x.locator], this.n));
 					if(S.length == 0) {
@@ -902,9 +894,9 @@ public class Polyomino {
 		// must be used with the exact cover function :
 		
 		static void PrintTiling(int width, int height, HashSet<boolean[][]> polyominosGrids) {
-			int dilatation_factor = 100;
-			Image2d img = new Image2d(30,30);
-			HashSet<Polyomino> polyominos = new HashSet<Polyomino>();
+			int dilation_factor = 100;
+			Image2d img = new Image2d(100,100);
+			LinkedList<Polyomino> polyominos = new LinkedList<Polyomino>();
 			int i = 0;
 			int j = 0;
 
@@ -912,18 +904,14 @@ public class Polyomino {
 				Polyomino temp = new Polyomino(B);
 				//Polyomino temp2 = temp.adaptTo(model);
 				//temp2 = temp2.translate(coordinates[i][0], coordinates[i][1]);
-				temp = temp.dilatateBy(dilatation_factor);
+				temp = temp.dilateBy(dilation_factor);
 				polyominos.add(temp);
 			}
 			for (Polyomino P : polyominos) {
 				int[][][] polyo = Polyomino.creator(P, 0, 0);
-				Color couleur = new Color((int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)));
+				Color color = new Color((int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)));
 				for (Polyomino Q : polyominos) {
-				    img.addPolygon(polyo[j][0], polyo[j][1], couleur);
-				    /*img.addEdge(polyo[j][0][0], polyo[j][1][0], polyo[j][0][1], polyo[j][1][1], 1);
-				    img.addEdge(polyo[j][0][2], polyo[j][1][1], polyo[j][0][2], polyo[j][1][2], 1);
-				    img.addEdge(polyo[j][0][3], polyo[j][1][2], polyo[j][0][3], polyo[j][1][3], 1);
-				    img.addEdge(polyo[j][0][0], polyo[j][1][3], polyo[j][0][0], polyo[j][1][0], 1);*/
+				    img.addPolygon(polyo[j][0], polyo[j][1], color);
 				    j++;
 				}
 				i++;
@@ -935,13 +923,13 @@ public class Polyomino {
 			
 			
 			
-		// Returns, for a given n and k, all the polyominos of size n that can cover their k-dilatation (with rotation)
+		// Returns, for a given n and k, all the polyominos of size n that can cover their k-dilation (with rotation)
 			
 		public static HashSet<Polyomino> dilateCoverFixed(int n, int k) {
-			HashSet<Polyomino> polyominos = Polyomino.generateFree(n);
+			HashSet<Polyomino> polyominos = Polyomino.naiveGenerateFree(n);
 			HashSet<Polyomino> newPolyominos = new HashSet<Polyomino>();
 			for (Polyomino P : polyominos) {
-				Polyomino P1 = P.dilatateBy(k);
+				Polyomino P1 = P.dilateBy(k);
 				if(!P1.GridDLSolution(P.returnFixed()).isEmpty()) {
 					newPolyominos.add(P);
 				}
@@ -952,13 +940,13 @@ public class Polyomino {
 			
 			
 			
-		// Returns, for a given n and k, all the polyominos of size n that can cover their k-dilatation (without rotations)
+		// Returns, for a given n and k, all the polyominos of size n that can cover their k-dilation (without rotations)
 			
 		public static HashSet<Polyomino> dilateCoverFree(int n, int k) {
-			HashSet<Polyomino> polyominos = Polyomino.generateFixed(n);
+			HashSet<Polyomino> polyominos = Polyomino.naiveGenerateFixed(n);
 			HashSet<Polyomino> newPolyominos = new HashSet<Polyomino>();
 			for (Polyomino P : polyominos) {
-				Polyomino P1 = P.dilatateBy(k);
+				Polyomino P1 = P.dilateBy(k);
 				HashSet<Polyomino> newPolyominos1 = new HashSet<Polyomino>();
 				newPolyominos1.add(P); 
 				if(!P1.GridDLSolution(newPolyominos1).isEmpty()) {

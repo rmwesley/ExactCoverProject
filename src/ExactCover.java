@@ -39,7 +39,7 @@ public class ExactCover {
 				}
 				// Stopping condition (Solution found)
 				if(c == Y.length) {
-					HashSet p = new HashSet<Node>();
+					HashSet<Integer> p = new HashSet<Integer>();
 					p.add(t);
 
 					P.add(p);

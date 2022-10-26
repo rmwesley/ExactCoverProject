@@ -137,7 +137,7 @@ public class DancingLinks {
 			}
 
 			if (isSolved()) {
-				HashSet p = new HashSet<Node>();
+				HashSet<Node> p = new HashSet<Node>();
 				p.add(row);
 
 				P.add(p);

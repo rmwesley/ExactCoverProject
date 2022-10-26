@@ -1,8 +1,6 @@
 import java.awt.Color;
 import java.awt.Polygon;
 
-
-
 // creates a ColoredPolygon. It is a Polygon, only with another variable : its color. IT'S THE POLYOMINOS
 public class ColoredPolygon {
 	
