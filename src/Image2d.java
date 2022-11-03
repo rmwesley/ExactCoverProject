@@ -3,40 +3,62 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 
 
 // Manipulation for images. Here we define an image
 public class Image2d {
-	Dimension dimension; // dimension of the image
-	public LinkedList<ColoredPolygon> coloredPolygons; // colored polygons in the image (which is a list of Polygons)
-	public LinkedList<Edge> edges; // edges to add to separate polygons (ie a list of Edges)
+	Dimension dimension;
+	public LinkedList<ColoredPolygon> coloredPolygons;
 
-	// Constructor that instantiates an image of a specified width and height
 	public Image2d(Dimension dimension){
 		this.dimension = dimension;
 		this.coloredPolygons = new LinkedList<ColoredPolygon>();
-		this.edges = new LinkedList<Edge>();
 	}
 	public Image2d(int width, int height) {
 		dimension = new Dimension(width, height);
 		coloredPolygons = new LinkedList<ColoredPolygon>();
-		edges = new LinkedList<Edge>();
 	}
 
-	// Create the polygon with xcoords, ycoords and color
-	public void addPolygon(int[] xcoords, int[] ycoords, Color color) {
-		coloredPolygons.add(new ColoredPolygon(xcoords, ycoords, color));
+	// Adds a single Polyomino to the current image (this)
+	public void addPolyomino(Polyomino P, Point center) {
+		HashSet<LinkedList<Point>> verticesSet = P.getVertices(center);
+		//System.out.println("Number of vertices:  "+verticesSet.size());
+		Color color = new Color((int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)));
+		Polygon temp = new Polygon();
+		for(LinkedList<Point> vertices : verticesSet){
+			for(Point v : vertices){
+				temp.addPoint(v.x, v.y);
+			}
+			this.addColoredPolygon(temp, color);
+			temp = new Polygon();
+		}
+	}
+	// Adds an array of Polyominoes to the current image (this)
+	public void addPolyominoes(Polyomino[] polyominoes, Point center, boolean horizontal){
+		for(int i=0; i < polyominoes.length; i++){
+			this.addPolyomino(polyominoes[i], center);
+			if(horizontal) center.translate(4+polyominoes[i].width, 0);
+			else center.translate(0, 4+polyominoes[i].width);
+		}
 	}
 
-	// Create the edge with coordinates x1, y1, x2, y2
-	public void addEdge(int x1, int y1, int x2, int y2, int width) {
-		edges.add(new Edge(x1, y1, x2, y2, width));
+	// Adds a HashSet of Polyominoes to the current image (this)
+	public void addPolyominoes(HashSet<Polyomino> polyominoes, Point center, boolean horizontal){
+		for(Polyomino p : polyominoes){
+			this.addPolyomino(p, center);
+			if(horizontal) center.translate(4+p.width, 0);
+			else center.translate(0, 4+p.width);
+		}
+	}
+
+	public void addColoredPolygon(Polygon polygon, Color color) {
+		coloredPolygons.add(new ColoredPolygon(polygon, color));
 	}
 
 	// Clear the picture
 	public void clear() {
 		coloredPolygons = new LinkedList<ColoredPolygon>();
-		edges = new LinkedList<Edge>();
 	}
 }

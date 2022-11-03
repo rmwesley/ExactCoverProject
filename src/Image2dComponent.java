@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 
 import javax.swing.JComponent;
 
@@ -16,7 +17,7 @@ class Image2dComponent extends JComponent {
 		this.img = img;
 		setPreferredSize(img.dimension);
 	}
-	
+
 	public void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 
@@ -28,21 +29,16 @@ class Image2dComponent extends JComponent {
 		g2.translate(0,200);
 		g2.scale(s, -s);
 
+		//int[] x = new int[3],y = new int[3];
+		//y[1]=10;
+		//x[2]=10;
+		//img.addColoredPolygon(new Polygon(x,y,3), new Color(0,0,0));
 		// draw the polygons
 		synchronized (img.coloredPolygons) {
 			for (ColoredPolygon coloredPolygon : img.coloredPolygons) {
 				g2.setColor(coloredPolygon.color);
 				g2.fillPolygon(coloredPolygon.polygon);
 				g2.drawPolygon(coloredPolygon.polygon);
-			}
-		}
-		
-		// draw the edges
-		g2.setColor(Color.white);
-		synchronized (img.edges) {
-			for (Edge edge : img.edges) {
-				g2.setStroke(new BasicStroke(edge.width));
-				g2.drawLine(edge.x1, edge.y1, edge.x2, edge.y2);
 			}
 		}
 	}
