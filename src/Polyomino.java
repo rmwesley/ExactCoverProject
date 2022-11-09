@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -36,11 +37,10 @@ public class Polyomino {
 	}
 
 	// Determines the coordinates of the vertices of the tiles composing the polyomino, relative to a given origin
-	public HashSet<LinkedList<Point>> getVertices(Point origin) {
-
+	public HashSet<Polygon> getPolygons(Point origin) {
 		// We define vertices, which will contain the coordinates of the vertices of the polygons composing the polyomino.
-		HashSet<LinkedList<Point>> vertices = new HashSet<LinkedList<Point>>();
-		LinkedList<Point> currTile = new LinkedList<Point>();
+		HashSet<Polygon> polygons = new HashSet<Polygon>();
+		Polygon currTile = new Polygon();
 		Point vertex = new Point();
 
 		for (int i = 0; i < this.width; i++) {

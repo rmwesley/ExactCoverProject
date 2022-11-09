@@ -23,16 +23,10 @@ public class Image2d {
 
 	// Adds a single Polyomino to the current image (this)
 	public void addPolyomino(Polyomino P, Point center) {
-		HashSet<LinkedList<Point>> verticesSet = P.getVertices(center);
-		//System.out.println("Number of vertices:  "+verticesSet.size());
+		HashSet<Polygon> polygons = P.getPolygons(center);
 		Color color = new Color((int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)));
-		Polygon temp = new Polygon();
-		for(LinkedList<Point> vertices : verticesSet){
-			for(Point v : vertices){
-				temp.addPoint(v.x, v.y);
-			}
-			this.addColoredPolygon(temp, color);
-			temp = new Polygon();
+		for(Polygon p : polygons){
+			this.addColoredPolygon(p, color);
 		}
 	}
 	// Adds an array of Polyominoes to the current image (this)

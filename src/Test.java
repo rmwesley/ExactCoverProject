@@ -308,7 +308,6 @@ public abstract class Test {
 			if (idx % 40 == 0) {
 				center.translate(0, Polyomino.max(l1) + 100);
 			}
-			HashSet<LinkedList<Point>> vetices = P.getVertices(center);
 			for (int j = 0; j < P.n; j++) {
 				img.addPolyominoes(polyominoes, new Point(0,0), true);
 			}
@@ -339,7 +338,6 @@ public abstract class Test {
 				z = 20;
 			}
 			Point center = new Point(z,l);
-			HashSet<LinkedList<Point>> vetices = P.getVertices(center);
 			for (int j = 0; j < P.n; j++) {
 				img.addPolyominoes(polyominoes, new Point(0,0), true);
 			}
