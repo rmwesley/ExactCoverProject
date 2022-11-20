@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Dimension;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -28,38 +29,50 @@ public abstract class Test {
 	}
 
 	static void minimalPolygon(){
-		Image2d img = new Image2d(150, 150);
+		//Image2d img = new Image2d(150, 150);
+		Image2d img = new Image2d();
 		int[] x = new int[3],y = new int[3];
-		y[1]=-10;
-		x[2]=10;
-		img.addColoredPolygon(new Polygon(x,y,3), new Color(0,0,0));
+		y[1]=50;
+		x[2]=50;
+		Polygon polygon = new Polygon(x,y,3);
+		polygon.translate(5,-30);
+		img.addColoredPolygon(polygon, new Color(0,0,0));
 		new Image2dViewer(img);
 	}
 	// This function prints what is contained in the file 'INF421'
 	static void inf421printer() {
-		Image2d img = new Image2d(800, 400);
+		//Image2d img = new Image2d(800, 400);
+		Image2dViewer frame = new Image2dViewer();	
 		Polyomino[] polyominoes = Polyomino.fileReader("assets/Figure2.txt");
-		Point center = new Point(0,0);
-		img.addPolyominoes(polyominoes, center, true);
-		new Image2dViewer(img);
+		frame.addPolyominoes(polyominoes, new Point(2,10));
+		//Point center = new Point(2,2);
+		//img.addPolyominoes(polyominoes, center, true);
+		//new Image2dViewer(img);
+		//frame.pack();
 	}
 
 	// This function uses the naive algorithm to represent all fixed polyominoes of size n for a given n
 	static void fixedGenerator(int n) {
-		Image2d img = new Image2d(1600,200);
+		//Image2d img = new Image2d(1600,400);
+		Image2dViewer frame = new Image2dViewer();	
 		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFixed(n);
-		Point center = new Point(2,3);
-		img.addPolyominoes(polyominoes, center, true);
-		new Image2dViewer(img);	
+		Point center = new Point(2,10);
+		frame.addPolyominoes(polyominoes, center);
+		//img.addPolyominoes(polyominoes, center, true);
 	}
 
 	// This function prints the free polyominoes using the naive algorithm
 	static void freeGenerator(int n) {
-		Image2d img = new Image2d(1600,200);
+		//Image2d img = new Image2d(1600,400);
+		Image2dViewer frame = new Image2dViewer();	
+		frame.setPreferredSize(new Dimension(500,500));
 		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFree(n);
-		Point center = new Point(2,3);
-		img.addPolyominoes(polyominoes, center, true);
-		new Image2dViewer(img);	
+		Point center = new Point(2,10);
+		frame.addPolyominoes(polyominoes, center);
+		frame.revalidate();
+		frame.repaint();
+		//img.addPolyominoes(polyominoes, center, true);
+		//new Image2dViewer(img);	
 	}
 
 	// A test for the exact cover problem
@@ -132,9 +145,7 @@ public abstract class Test {
 
 		System.out.println(visualizeMatrix(M));
 
-
 		// Naive solution:
-
 		long startTime = System.nanoTime();
 		HashSet<HashSet<Integer>> Solutions = ExactCover.cover(new int[M[0].length], M);
 		long endTime = System.nanoTime();
@@ -177,82 +188,6 @@ public abstract class Test {
 		System.out.println("Took "+ (endTime - startTime) + " ns");
 	}
 
-	// A test that takes 3 different polyominoes and prints their tilings using different sets of pieces
-	public static void testTiling() {
-		boolean[][] A = new boolean[3][2];
-		A[0] = new boolean[] {true, false};
-		A[1] = new boolean[] {true, false};
-		A[2] = new boolean[] {true, true};
-
-		boolean[][] B = new boolean[4][3];
-		B[0] = new boolean[] {true, false, false};
-		B[1] = new boolean[] {true, false, false};
-		B[2] = new boolean[] {true, false, true};
-		B[3] = new boolean[] {false, true, true};
-
-		boolean[][] C = new boolean[4][3];
-		C[0] = new boolean[] {true, false, false};
-		C[1] = new boolean[] {true, true, true};
-		C[2] = new boolean[] {true, true, true};
-		C[3] = new boolean[] {false, true, true};
-
-		Polyomino P = new Polyomino(A);
-		System.out.println(visualizeMatrix(P.order()));
-		int[][] M = P.toMatrix(Polyomino.naiveGenerateFixed(2));
-
-		Polyomino Q = new Polyomino(B);
-		System.out.println(visualizeMatrix(Q.order()));
-		int[][] N = Q.toMatrix(Polyomino.naiveGenerateFixed(2));
-
-		Polyomino R = new Polyomino(C);
-		System.out.println(visualizeMatrix(R.order()));
-		int[][] O = R.toMatrix(Polyomino.naiveGenerateFixed(3));
-
-		System.out.println(visualizeMatrix(M) + "\n");
-
-		System.out.println(visualizeMatrix(N) + "\n");
-
-		System.out.println(visualizeMatrix(O) + "\n");
-
-		O = R.toUniqueMatrix(Polyomino.naiveGenerateFixed(3)); 
-
-		System.out.println(visualizeMatrix(O) + "\n");
-
-		System.out.println(R);
-
-		System.out.println("Until now we only verified our entries, we now execute the covering algorithm tests and their execution time:\n");
-
-
-
-		System.out.println(visualizeMatrix(P.toUniqueMatrix(Polyomino.naiveGenerateFixed(2))));
-
-		long startTime = System.nanoTime();
-		HashSet<HashSet<boolean[][]>> Sols = P.GridDLSolutionUnique(Polyomino.naiveGenerateFixed(2));
-		long endTime = System.nanoTime();
-		System.out.println("Took "+ (endTime - startTime) + " ns");
-
-		startTime = System.nanoTime();
-
-		for (HashSet<boolean[][]> solution : Sols) {
-			Point center = new Point();
-			for(boolean[][] grid : solution){
-				Polyomino p = new Polyomino(grid);
-				img.addPolyomino(p, center);
-				center.translate(2+p.width, 0);
-			}
-		}
-		new Image2dViewer(img);
-		endTime = System.nanoTime();
-		System.out.println("Took "+ (endTime - startTime) + " ns");
-
-		for (HashSet<boolean[][]> is : Sols) {
-			for (boolean[][] is2 : is) {
-				System.out.println(visualizeMatrix(is2));
-			}
-			System.out.println("-------------------------------------");
-		}
-	}
-
 	// Function to visualize a matrix
 	public static String visualizeMatrix(int[][] M) {
 		String S = new String();
@@ -291,7 +226,8 @@ public abstract class Test {
 
 	// Function that determines for n, and k all the polyominoes of size n that can cover their own k-dilation, and represents them
 	public static void dilateRepresentFixed(int n, int k) {
-		Image2d img = new Image2d(30,30);
+		//Image2d img = new Image2d(30,30);
+		Image2dViewer frame = new Image2dViewer();
 		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFixed(n, k);
 		for (Polyomino P : polyominoes) {
 			Polyomino D = P.dilateBy(10);
@@ -309,15 +245,17 @@ public abstract class Test {
 				center.translate(0, Polyomino.max(l1) + 100);
 			}
 			for (int j = 0; j < P.n; j++) {
-				img.addPolyominoes(polyominoes, new Point(0,0), true);
+				frame.addPolyominoes(polyominoes, new Point(0,0));
+				//img.addPolyominoes(polyominoes, new Point(0,0), true);
 			}
 		}
-		new Image2dViewer(img);	
+		//new Image2dViewer(img);	
 	}
 
 	// Function that determines for n, and k all the polyominoes of size n that can cover their own k-dilation, and represents them
 	public static void dilateRepresentFree(int n, int k) {
-		Image2d img = new Image2d(30,30);
+		//Image2d img = new Image2d(30,30);
+		Image2dViewer frame = new Image2dViewer();
 		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFree(n, k);
 
 		for (Polyomino P : polyominoes) {
@@ -339,10 +277,11 @@ public abstract class Test {
 			}
 			Point center = new Point(z,l);
 			for (int j = 0; j < P.n; j++) {
-				img.addPolyominoes(polyominoes, new Point(0,0), true);
+				frame.addPolyominoes(polyominoes, new Point(0,0));
+				//img.addPolyominoes(polyominoes, new Point(0,0), true);
 			}
 			i++;
 		}
-		new Image2dViewer(img);	
+		//new Image2dViewer(img);	
 	}	
 }
