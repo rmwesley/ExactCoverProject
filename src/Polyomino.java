@@ -41,18 +41,6 @@ public class Polyomino {
 		for (Point p : tiles){
 			this.addTile(new Point(p.x, p.y));
 		}
-		//for (Point p : tiles){
-		//	this.tiles.add(new Point(p.x, p.y));
-		//}
-		//this.n = tiles.size();
-		//this.corner = tiles.iterator().next();
-		//this.width = this.height = 0;
-		//for (Point p : tiles){
-		//	if(p.x < this.corner.x) this.corner.x = p.x;
-		//	if(p.y < this.corner.y) this.corner.y = p.y;
-		//	if(p.x > this.corner.x + width) width = p.x - this.corner.x;
-		//	if(p.y > this.corner.y + height) height = p.y - this.corner.y;
-		//}
 		this.color = new Color(255, 0, 0);
 	}
 	// Constructs a polyomino from a line-string of coordinates
@@ -129,10 +117,8 @@ public class Polyomino {
 
 		for(Point p : this.tiles){
 			currTile = new Polygon();
-			vertex = new Point(2*(p.x- this.corner.x) + center.x,
+			vertex = new Point(2*(p.x - this.corner.x) + center.x,
 					2*(p.y - this.corner.y) + center.y);
-			//vertex = new Point(2*(p.x + center.x - this.corner.x),
-			//		2*(p.y + center.y - this.corner.y));
 			currTile.addPoint(vertex.x, vertex.y);
 			vertex.translate(0, 1);
 			currTile.addPoint(vertex.x, vertex.y);
@@ -226,11 +212,11 @@ public class Polyomino {
 		Polyomino polyomino = (Polyomino) obj;
 		if(this == polyomino) return true;
 		if(this.n != polyomino.n) return false;
-		//if(!this.corner.equals(polyomino.corner)) return false;
-		//if(!(this.width == polyomino.width)
-		//		|| !(this.height == polyomino.height)){
-		//	return false;
-		//}
+		if(!this.corner.equals(polyomino.corner)) return false;
+		if(!(this.width == polyomino.width)
+				|| !(this.height == polyomino.height)){
+			return false;
+		}
 		return this.tiles.equals(polyomino.tiles);
 	}
 	@Override
@@ -289,31 +275,17 @@ public class Polyomino {
 	public LinkedList<Polyomino> children() {
 		LinkedList<Polyomino> children = new LinkedList<Polyomino>();
 		for(Point p : this.tiles){
-			//System.out.println("\n\nPoint: " + p);
 			for(int i=-2; i<2; i++){
-				//System.out.println((i%2) + " " + (i+1)%2);
-				//System.out.println(2*((i%2)) + " " + 2*((i+1)%2));
 				Point neighbor = new Point(p.x + (i%2), p.y + ((i+1)%2));
 				if(!this.tiles.contains(neighbor)) {
-					//System.out.println("Original: " + this);
 					Polyomino child = new Polyomino(this.tiles);
-					//Polyomino child = new Polyomino();
-					//for (Point temp : this.tiles){
-					//	child.addTile(temp.x, temp.y);
-					//}
-					//System.out.println("Neighbor: " + neighbor);
-					//child.addTile(neighbor);
 					child.addTile(neighbor.x, neighbor.y);
-					//System.out.println("Child: " + child);
 					child.recenter();
-					//System.out.println("Child after: " + child);
 					if(children.contains(child)) {
-						//System.out.println("Contains!!!");
 						continue;
 					}
 					children.add(child);
 				}
-				//System.out.println("Children: " + children + '\n');
 			}
 		}
 		return children;
@@ -328,9 +300,6 @@ public class Polyomino {
 		} 
 		else {
 			for (Polyomino polyomino : naiveGenerateFixed(n - 1)) {
-				//for (Polyomino temp : polyomino.children()){
-				//	polyominoes.add(new Polyomino(temp.tiles));
-				//}
 				polyominoes.addAll(polyomino.children());
 			}
 			return polyominoes;
@@ -348,8 +317,6 @@ public class Polyomino {
 			HashSet<Polyomino> polyominoes = new HashSet<Polyomino>();
 			for (Polyomino P : naiveGenerateFixed(n - 1)) {
 				for (Polyomino temp : P.children()){
-					//if (Collections.disjoint(
-					//			polyominoes, temp.getEquivalent())) {
 					if ((!polyominoes.contains(temp)) && Collections
 							.disjoint(polyominoes, temp.getEquivalent())) {
 						polyominoes.add(temp);
@@ -466,17 +433,13 @@ public class Polyomino {
 			}
 			return max;
 		}
-		// Draws a Polyomino in a new Image2d element
+		// Draws a Polyomino in a new Image2d component
 		public Image2d draw(Point center){
-			//Image2d img = new Image2d();
-			//img.addPolyomino(this, center);
-			//return img;
 			return new Image2d(this, center);
 		}
-		// Draws a Polyomino in a new Image2d element
+		// Adds a Polyomino drawing to a new container
 		public void show(){
-			//new Image2dViewer(this.draw(new Point(2,0)));
-			new Image2dViewer(this.draw(new Point(2, 2)));
+			new Image2dViewer(this.draw(new Point(0, 0)));
 		}
 
 		// Returns, for a given n and k, all the polyominoes of size n that can cover their k-dilation (with rotation)
@@ -486,7 +449,7 @@ public class Polyomino {
 			for (Polyomino originalP : polyominoes) {
 				Polyomino dilatedP = originalP.dilateBy(k);
 				if(!dilatedP.getEC(originalP.getEquivalent())
-						.covers().isEmpty()) {
+						.covers(true).isEmpty()) {
 					solutionPolyominoes.add(originalP);
 						}
 			}
@@ -499,12 +462,12 @@ public class Polyomino {
 			HashSet<Polyomino> solutionPolyominoes = new HashSet<Polyomino>();
 			for (Polyomino originalP : polyominoes) {
 				Polyomino dilatedP = originalP.dilateBy(k);
+				HashSet<Polyomino> pieces = new HashSet<Polyomino>();
+				pieces.add(originalP);
 
-				if(!dilatedP.getEC((HashSet<Polyomino>)
-							Collections.singleton(originalP)
-							).covers().isEmpty()) {
+				if(!dilatedP.getEC(pieces).covers(true).isEmpty()) {
 					solutionPolyominoes.add(originalP);
-							}
+				}
 			}
 			return solutionPolyominoes;
 		}

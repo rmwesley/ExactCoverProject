@@ -29,41 +29,30 @@ public abstract class Test {
 	}
 
 	static void minimalPolygon(){
-		//Image2d img = new Image2d(150, 150);
 		Image2d img = new Image2d();
 		int[] x = new int[3],y = new int[3];
 		y[1]=50;
 		x[2]=50;
-		Polygon polygon = new Polygon(x,y,3);
-		polygon.translate(5,-30);
-		img.addColoredPolygon(polygon, new Color(0,0,0));
+		img.addColoredPolygon(new Polygon(x,y,3), new Color(0,0,0));
 		new Image2dViewer(img);
 	}
 	// This function prints what is contained in the file 'INF421'
 	static void inf421printer() {
-		//Image2d img = new Image2d(800, 400);
 		Image2dViewer frame = new Image2dViewer();	
 		Polyomino[] polyominoes = Polyomino.fileReader("assets/Figure2.txt");
-		frame.addPolyominoes(polyominoes, new Point(2,10));
-		//Point center = new Point(2,2);
-		//img.addPolyominoes(polyominoes, center, true);
-		//new Image2dViewer(img);
-		//frame.pack();
+		frame.addPolyominoes(polyominoes, new Point(2,0));
 	}
 
 	// This function uses the naive algorithm to represent all fixed polyominoes of size n for a given n
 	static void fixedGenerator(int n) {
-		//Image2d img = new Image2d(1600,400);
 		Image2dViewer frame = new Image2dViewer();	
 		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFixed(n);
 		Point center = new Point(2,10);
 		frame.addPolyominoes(polyominoes, center);
-		//img.addPolyominoes(polyominoes, center, true);
 	}
 
 	// This function prints the free polyominoes using the naive algorithm
 	static void freeGenerator(int n) {
-		//Image2d img = new Image2d(1600,400);
 		Image2dViewer frame = new Image2dViewer();	
 		frame.setPreferredSize(new Dimension(500,500));
 		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFree(n);
@@ -71,8 +60,6 @@ public abstract class Test {
 		frame.addPolyominoes(polyominoes, center);
 		frame.revalidate();
 		frame.repaint();
-		//img.addPolyominoes(polyominoes, center, true);
-		//new Image2dViewer(img);	
 	}
 
 	// A test for the exact cover problem
@@ -88,7 +75,7 @@ public abstract class Test {
 		M[4] = new int[] {0, 1, 0, 0, 0, 0, 1};
 		M[5] = new int[] {0, 0, 0, 1, 1, 0, 1};
 
-		System.out.println(visualizeMatrix(M));
+		System.out.println('\n' + visualizeMatrix(M));
 
 		// Naive solution:
 		long startTime = System.nanoTime();
@@ -125,11 +112,7 @@ public abstract class Test {
 		System.out.print("\nNumber of solutions: " + NodeList.size());
 	}
 
-
-
-
 	// A test of the Dancing links algorithm
-
 	static void TestDancingLinks() {
 		int[][] M = new int[6][7];
 		HashSet<HashSet<Node>> NodeList = new HashSet<HashSet<Node>>();
@@ -143,7 +126,7 @@ public abstract class Test {
 		M[4] = new int[] {0, 1, 0, 0, 0, 0, 1};
 		M[5] = new int[] {0, 0, 0, 1, 1, 0, 1};
 
-		System.out.println(visualizeMatrix(M));
+		System.out.println('\n' + visualizeMatrix(M));
 
 		// Naive solution:
 		long startTime = System.nanoTime();
@@ -226,15 +209,9 @@ public abstract class Test {
 
 	// Function that determines for n, and k all the polyominoes of size n that can cover their own k-dilation, and represents them
 	public static void dilateRepresentFixed(int n, int k) {
-		//Image2d img = new Image2d(30,30);
 		Image2dViewer frame = new Image2dViewer();
 		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFixed(n, k);
-		for (Polyomino P : polyominoes) {
-			Polyomino D = P.dilateBy(10);
-			polyominoes.remove(P);
-			polyominoes.add(D);
-			//polyominoes.add(i,Polyomino.symmetry(polyominoes.get(i)));
-		}
+
 		Point center = new Point(20,0);
 		int[] l1 = new int[40];
 		int idx=0;
@@ -254,16 +231,9 @@ public abstract class Test {
 
 	// Function that determines for n, and k all the polyominoes of size n that can cover their own k-dilation, and represents them
 	public static void dilateRepresentFree(int n, int k) {
-		//Image2d img = new Image2d(30,30);
 		Image2dViewer frame = new Image2dViewer();
 		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFree(n, k);
 
-		for (Polyomino P : polyominoes) {
-			Polyomino D = P.dilateBy(10);
-			polyominoes.remove(P);
-			polyominoes.add(D);
-			//polyominoes.add(i,Polyomino.symmetry(polyominoes.get(i)));
-		}
 		int z = 20;
 		int l = 0;
 		int[] l1 = new int[40];
