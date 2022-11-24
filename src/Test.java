@@ -61,6 +61,27 @@ public abstract class Test {
 		frame.revalidate();
 		frame.repaint();
 	}
+	static void GenericECExample() {
+		Polyomino p = new Polyomino("[(0,0), (0,1), (1,0)]");
+		//p = new Polyomino("[(0,0), (0,1)]");
+		Polyomino bigP = p.dilateBy(3);
+		//System.out.println(p1.getFittings(bigP).size());
+		HashSet<Polyomino> equivalent = p.getEquivalent();
+		Image2dViewer frame = new Image2dViewer(bigP.draw(new Point()));
+		frame.addPolyominoes(equivalent, new Point(0, 6));
+
+		HashSet<Polyomino> pieces = new HashSet<Polyomino>();
+		//HashSet<Polyomino> pieces = p.getFittings(bigP);
+		for (Polyomino temp : equivalent){
+			pieces.addAll(temp.getFittings(bigP));
+		}
+
+		GenericsEC<Point> problem = bigP.getEC(pieces);
+		System.out.println("Solutions: ");
+		for (HashSet<HashSet<Point>> solution :  problem.covers(true)){
+			System.out.println("\n" + solution);
+		}
+	}
 
 	// A test for the exact cover problem
 	static void ExactcoverExample() {
@@ -212,46 +233,15 @@ public abstract class Test {
 		Image2dViewer frame = new Image2dViewer();
 		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFixed(n, k);
 
-		Point center = new Point(20,0);
-		int[] l1 = new int[40];
-		int idx=0;
+		Point center = new Point();
 
-		for (Polyomino P : polyominoes) {
-			l1[idx%40] = P.height;
-			if (idx % 40 == 0) {
-				center.translate(0, Polyomino.max(l1) + 100);
-			}
-			for (int j = 0; j < P.n; j++) {
-				frame.addPolyominoes(polyominoes, new Point(0,0));
-				//img.addPolyominoes(polyominoes, new Point(0,0), true);
-			}
-		}
-		//new Image2dViewer(img);	
+		frame.addPolyominoes(polyominoes, center);
 	}
 
 	// Function that determines for n, and k all the polyominoes of size n that can cover their own k-dilation, and represents them
 	public static void dilateRepresentFree(int n, int k) {
 		Image2dViewer frame = new Image2dViewer();
 		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFree(n, k);
-
-		int z = 20;
-		int l = 0;
-		int[] l1 = new int[40];
-		int i = 0;
-
-		for (Polyomino P : polyominoes) {
-			l1[i%40] = P.height;
-			if (i % 40 == 0) {
-				l = Polyomino.max(l1) + l + 100;
-				z = 20;
-			}
-			Point center = new Point(z,l);
-			for (int j = 0; j < P.n; j++) {
-				frame.addPolyominoes(polyominoes, new Point(0,0));
-				//img.addPolyominoes(polyominoes, new Point(0,0), true);
-			}
-			i++;
-		}
-		//new Image2dViewer(img);	
+		frame.addPolyominoes(polyominoes, new Point(0,0));
 	}	
 }

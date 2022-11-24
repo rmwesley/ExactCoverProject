@@ -247,6 +247,62 @@ public class Polyomino {
 		return polyominoList.toArray(new Polyomino[0]);
 	}
 
+	public HashSet<Polyomino> getFittings(Polyomino polyomino){
+		HashSet<Polyomino> fittingPolyominoes =	new HashSet<Polyomino>();
+
+		Point fixedPoint = this.tiles.iterator().next();
+		this.translate(-fixedPoint.x, -fixedPoint.y);
+
+		for(Point p: polyomino.tiles){
+			this.translate(p.x, p.y);
+			if(polyomino.tiles.containsAll(this.tiles)){
+				//System.out.println("\n" + this);
+				//System.out.println(polyomino);
+
+				Polyomino currPolyomino = new Polyomino();
+				for(Point temp: this.tiles){
+					currPolyomino.addTile(new Point(temp.x, temp.y));
+				}
+				//System.out.println(currTile);
+
+				fittingPolyominoes.add(currPolyomino);
+				//fittingTiles.add(new HashSet<Point>(this.tiles));
+			}
+			this.translate(-p.x, -p.y);
+		}
+		this.translate(fixedPoint.x, fixedPoint.y);
+		return fittingPolyominoes;
+	}
+
+	////Get all the ways "this" can fit inside specified Polyomino
+	//public HashSet<HashSet<Point>> getFittings(Polyomino polyomino){
+	//	HashSet<HashSet<Point>> fittingTiles =
+	//		new HashSet<HashSet<Point>>();
+
+	//	Point fixedPoint = this.tiles.iterator().next();
+	//	this.translate(-fixedPoint.x, -fixedPoint.y);
+
+	//	for(Point p: polyomino.tiles){
+	//		this.translate(p.x, p.y);
+	//		if(polyomino.tiles.containsAll(this.tiles)){
+	//			//System.out.println("\n" + this);
+	//			//System.out.println(polyomino);
+
+	//			HashSet<Point> currTiles = new HashSet<Point>();
+	//			for(Point temp: this.tiles){
+	//				currTiles.add(new Point(temp.x, temp.y));
+	//			}
+	//			//System.out.println(currTile);
+
+	//			fittingTiles.add(currTiles);
+	//			//fittingTiles.add(new HashSet<Point>(this.tiles));
+	//		}
+	//		this.translate(-p.x, -p.y);
+	//	}
+	//	this.translate(fixedPoint.x, fixedPoint.y);
+	//	return fittingTiles;
+	//}
+
 	// Returns all fixed Polyominoes associated to a given Polyomino
 	// i.e. all the equivalence classes
 	public HashSet<Polyomino> getEquivalent() {
@@ -279,7 +335,7 @@ public class Polyomino {
 				Point neighbor = new Point(p.x + (i%2), p.y + ((i+1)%2));
 				if(!this.tiles.contains(neighbor)) {
 					Polyomino child = new Polyomino(this.tiles);
-					child.addTile(neighbor.x, neighbor.y);
+					child.addTile(new Point(neighbor.x, neighbor.y));
 					child.recenter();
 					if(children.contains(child)) {
 						continue;
@@ -321,154 +377,165 @@ public class Polyomino {
 							.disjoint(polyominoes, temp.getEquivalent())) {
 						polyominoes.add(temp);
 							}
-					}
-				}
-				return polyominoes;
-			}
-		}
-
-		// Verifies if two Polyominoes are equivalent
-		public boolean isEquivalentTo(Polyomino polyomino) {
-			return this.getEquivalent().contains(polyomino);
-		}
-
-		// Returns the exact cover problem of this and a set of polyominoes, not allowing repetitions of equivalent elements from pieces
-		public int[][] getUniqueECMatrix(HashSet<Polyomino> pieces) {
-			int nPieces = pieces.size();
-			//int[][] matrix = new int[nPieces][this.n + nPieces];
-			//int[][] repetitions = new int[nPieces][nPieces];
-			//int[] vector = new int[nPieces];
-			boolean repeated = false;
-			int i=0, j=0;
-			int uniqueCounter = 0;
-
-			j = this.n;
-			HashSet<Polyomino> representants = new HashSet<Polyomino>();
-			HashMap<Polyomino, Integer> identifiers = new HashMap<Polyomino, Integer>();
-			//HashMap<Polyomino, int[]> matrixVectors = new HashMap<Polyomino, int[]>();
-			for (Polyomino polyomino : pieces){
-				for (Polyomino rep : representants){
-					if(polyomino.isEquivalentTo(rep)){
-						repeated = true;
-						//vector = matrixVectors.get(rep);
-						//vector.set(i, 1);
-						//matrixVectors.put(rep, vector);
-						identifiers.put(polyomino, identifiers.get(rep));
-						j++;
-					}
-				}
-				if (!repeated){
-					//vector = new int[nPieces];
-					//vector[i] = 1;
-					//matrixVectors.put(polyomino, vector);
-					identifiers.put(polyomino, uniqueCounter);
-					representants.add(polyomino);
-					uniqueCounter++;
-				}
-				i++;
-			}
-			i=0;
-			int[][] matrix = new int[nPieces][this.n + uniqueCounter];
-			for (Polyomino polyomino : pieces) {
-				matrix[i][this.n + identifiers.get(polyomino)] = 1;
-				i++;
-			}
-			i=0;j=0;
-			for (Polyomino polyomino : pieces) {
-				for (Point p : this.tiles) {
-					if(polyomino.tiles.contains(p)) {
-						matrix[i][j] = 1;
-					}
-					j++;
-				}
-				i++;
-			}
-			return matrix;
-		}
-
-		// Creates covering problem for this polyomino
-		public GenericsEC<Point> getEC(HashSet<Polyomino> polyominoPieces){
-			HashSet<Point> groundSet = this.tiles;
-			HashSet<HashSet<Point>> pieces = new HashSet<HashSet<Point>>();
-			for (Polyomino polyomino : polyominoPieces){
-				pieces.add(polyomino.tiles);
-			}
-			return new GenericsEC<Point>(groundSet, pieces);
-		}
-
-		// Returns the exact cover problem of this and a set of polyominoes, allowing repetitions of elements
-		public int[][] getECMatrix(HashSet<Polyomino> pieces) {
-			int[][] matrix = new int[pieces.size()][this.n];
-			int i=0, j=0;
-			for (Polyomino polyomino : pieces) {
-				for (Point p : this.tiles) {
-					if(polyomino.tiles.contains(p)) {
-						matrix[i][j] = 1;
-					}
-					j++;
-				}
-				i++;
-			}
-			return matrix;
-		}
-
-		// toString method to visualize the Polyomino as a String
-		@Override
-		public String toString() {
-			String str = new String();
-
-			str += "[";
-			for (Point p : this.tiles) {
-				str += "(" + p.x + "," + p.y + "), ";
-			}
-			str = str.substring(0, str.length() - 2);
-			str += "]";
-			return str;
-		}
-
-		public static int max(int[] list){
-			int max = list[0];
-			for(int i=1; i < list.length; i++){
-				if(list[i] > max) max = list[i];
-			}
-			return max;
-		}
-		// Draws a Polyomino in a new Image2d component
-		public Image2d draw(Point center){
-			return new Image2d(this, center);
-		}
-		// Adds a Polyomino drawing to a new container
-		public void show(){
-			new Image2dViewer(this.draw(new Point(0, 0)));
-		}
-
-		// Returns, for a given n and k, all the polyominoes of size n that can cover their k-dilation (with rotation)
-		public static HashSet<Polyomino> dilateCoverFree(int n, int k) {
-			HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFixed(n);
-			HashSet<Polyomino> solutionPolyominoes = new HashSet<Polyomino>();
-			for (Polyomino originalP : polyominoes) {
-				Polyomino dilatedP = originalP.dilateBy(k);
-				if(!dilatedP.getEC(originalP.getEquivalent())
-						.covers(true).isEmpty()) {
-					solutionPolyominoes.add(originalP);
-						}
-			}
-			return solutionPolyominoes;
-		}
-
-		// Returns, for a given n and k, all the polyominoes of size n that can cover their k-dilation (without rotations)
-		public static HashSet<Polyomino> dilateCoverFixed(int n, int k) {
-			HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFixed(n);
-			HashSet<Polyomino> solutionPolyominoes = new HashSet<Polyomino>();
-			for (Polyomino originalP : polyominoes) {
-				Polyomino dilatedP = originalP.dilateBy(k);
-				HashSet<Polyomino> pieces = new HashSet<Polyomino>();
-				pieces.add(originalP);
-
-				if(!dilatedP.getEC(pieces).covers(true).isEmpty()) {
-					solutionPolyominoes.add(originalP);
 				}
 			}
-			return solutionPolyominoes;
+			return polyominoes;
 		}
 	}
+
+	// Verifies if two Polyominoes are equivalent
+	public boolean isEquivalentTo(Polyomino polyomino) {
+		return this.getEquivalent().contains(polyomino);
+	}
+
+	// Returns the exact cover problem of this and a set of polyominoes, not allowing repetitions of equivalent elements from pieces
+	public int[][] getUniqueECMatrix(HashSet<Polyomino> pieces) {
+		int nPieces = pieces.size();
+		//int[][] matrix = new int[nPieces][this.n + nPieces];
+		//int[][] repetitions = new int[nPieces][nPieces];
+		//int[] vector = new int[nPieces];
+		boolean repeated = false;
+		int i=0, j=0;
+		int uniqueCounter = 0;
+
+		j = this.n;
+		HashSet<Polyomino> representants = new HashSet<Polyomino>();
+		HashMap<Polyomino, Integer> identifiers = new HashMap<Polyomino, Integer>();
+		//HashMap<Polyomino, int[]> matrixVectors = new HashMap<Polyomino, int[]>();
+		for (Polyomino polyomino : pieces){
+			for (Polyomino rep : representants){
+				if(polyomino.isEquivalentTo(rep)){
+					repeated = true;
+					//vector = matrixVectors.get(rep);
+					//vector.set(i, 1);
+					//matrixVectors.put(rep, vector);
+					identifiers.put(polyomino, identifiers.get(rep));
+					j++;
+				}
+			}
+			if (!repeated){
+				//vector = new int[nPieces];
+				//vector[i] = 1;
+				//matrixVectors.put(polyomino, vector);
+				identifiers.put(polyomino, uniqueCounter);
+				representants.add(polyomino);
+				uniqueCounter++;
+			}
+			i++;
+		}
+		i=0;
+		int[][] matrix = new int[nPieces][this.n + uniqueCounter];
+		for (Polyomino polyomino : pieces) {
+			matrix[i][this.n + identifiers.get(polyomino)] = 1;
+			i++;
+		}
+		i=0;j=0;
+		for (Polyomino polyomino : pieces) {
+			for (Point p : this.tiles) {
+				if(polyomino.tiles.contains(p)) {
+					matrix[i][j] = 1;
+				}
+				j++;
+			}
+			i++;
+		}
+		return matrix;
+	}
+
+	// Creates covering problem for this polyomino
+	public GenericsEC<Point> getEC(HashSet<Polyomino> polyominoPieces){
+		HashSet<Point> groundSet = this.tiles;
+		HashSet<HashSet<Point>> pieces = new HashSet<HashSet<Point>>();
+		for (Polyomino polyomino : polyominoPieces){
+			pieces.add(polyomino.tiles);
+		}
+		return new GenericsEC<Point>(groundSet, pieces);
+	}
+
+	// Returns the exact cover problem of this and a set of polyominoes, allowing repetitions of elements
+	public int[][] getECMatrix(HashSet<Polyomino> pieces) {
+		int[][] matrix = new int[pieces.size()][this.n];
+		int i=0, j=0;
+		for (Polyomino polyomino : pieces) {
+			for (Point p : this.tiles) {
+				if(polyomino.tiles.contains(p)) {
+					matrix[i][j] = 1;
+				}
+				j++;
+			}
+			i++;
+		}
+		return matrix;
+	}
+
+	// toString method to visualize the Polyomino as a String
+	@Override
+	public String toString() {
+		String str = new String();
+
+		str += "[";
+		for (Point p : this.tiles) {
+			str += "(" + p.x + "," + p.y + "), ";
+		}
+		str = str.substring(0, str.length() - 2);
+		str += "]";
+		return str;
+	}
+
+	public static int max(int[] list){
+		int max = list[0];
+		for(int i=1; i < list.length; i++){
+			if(list[i] > max) max = list[i];
+		}
+		return max;
+	}
+	// Draws a Polyomino in a new Image2d component
+	public Image2d draw(Point center){
+		return new Image2d(this, center);
+	}
+	// Adds a Polyomino drawing to a new container
+	public void show(){
+		new Image2dViewer(this.draw(new Point(0, 0)));
+	}
+
+	// Returns, for a given n and k, all the polyominoes of size n that can cover their k-dilation (with rotation)
+	public static HashSet<Polyomino> dilateCoverFree(int n, int k) {
+		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFixed(n);
+		HashSet<Polyomino> satisfyingPolyominoes = new HashSet<Polyomino>();
+		for (Polyomino originalP : polyominoes) {
+			Polyomino dilatedP = originalP.dilateBy(k);
+			HashSet<Polyomino> pieces = originalP.getFittings(dilatedP);
+			HashSet<Polyomino> equivalent = originalP.getEquivalent();
+
+			for(Polyomino temp : equivalent){
+			// This correction was used because rotations had errors with
+			// Rectangle bounds. Now obsolete since error was corrected.
+			//	temp.recenter();
+				pieces.addAll(temp.getFittings(dilatedP));
+			}
+			//equivalent = new HashSet<Polyomino>(equivalent);
+
+			if(!dilatedP.getEC(pieces).covers(true).isEmpty()
+					&& Collections.disjoint(equivalent,
+						satisfyingPolyominoes)) {
+				satisfyingPolyominoes.add(originalP);
+			}
+		}
+		return satisfyingPolyominoes;
+	}
+	// Returns, for a given n and k, all the polyominoes of size n that can cover their k-dilation (without rotations)
+	public static HashSet<Polyomino> dilateCoverFixed(int n, int k) {
+		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFixed(n);
+		HashSet<Polyomino> satisfyingPolyominoes = new HashSet<Polyomino>();
+		for (Polyomino originalP : polyominoes) {
+			//originalP.recenter();
+			Polyomino dilatedP = originalP.dilateBy(k);
+			HashSet<Polyomino> pieces = originalP.getFittings(dilatedP);
+
+			if(!dilatedP.getEC(pieces).covers(true).isEmpty()) {
+				satisfyingPolyominoes.add(originalP);
+			}
+		}
+		return satisfyingPolyominoes;
+	}
+}
