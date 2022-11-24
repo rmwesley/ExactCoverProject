@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Polygon;
 
 import java.io.BufferedReader;
@@ -21,17 +22,14 @@ public class Polyomino {
 
 	public HashSet<Point> tiles; // Set of tiles of the Polyomino
 	public int n; // Number of tiles in the polyomino
-	public Point corner; // Upper left corner of the Polyomino
-	public int width, height; // Rectangular dimensions of the polyomino
+	public Rectangle bounds; // Rectangle with bounds of the polyomino
 	public Color color;
 
 	// Initializes an empty Polyomino
 	public Polyomino() {
 		this.tiles = new HashSet<Point>();
 		this.n = 0;
-		this.corner = new Point();
-		this.width = 0;
-		this.height = 0;
+		this.bounds = new Rectangle();
 		this.color = new Color(255, 0, 0);
 		//this.color = new Color((int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)));
 	}
@@ -66,21 +64,10 @@ public class Polyomino {
 		this.tiles.add(p);
 		this.n++;
 		if(this.n == 1){
-			this.corner = new Point(p.x, p.y);
-			this.width=1;
-			this.height=1;
+			this.bounds = new Rectangle(p.x, p.y, 0, 0);
 			return;
 		}
-		if(p.x < this.corner.x) {
-			this.width += this.corner.x - p.x;
-			this.corner.x = p.x;
-		}
-		if(p.y < this.corner.y) {
-			this.height += this.corner.y - p.y;
-			this.corner.y = p.y;
-		}
-		if(p.x >= this.corner.x + width) width = p.x - this.corner.x + 1;
-		if(p.y >= this.corner.y + height) height = p.y - this.corner.y + 1;
+		this.bounds.add(p);
 	}
 	public void addTile(int x, int y){
 		this.addTile(new Point(x, y));
@@ -117,8 +104,8 @@ public class Polyomino {
 
 		for(Point p : this.tiles){
 			currTile = new Polygon();
-			vertex = new Point(2*(p.x - this.corner.x) + center.x,
-					2*(p.y - this.corner.y) + center.y);
+			vertex = new Point(2*(p.x - this.bounds.x) + center.x,
+					2*(p.y - this.bounds.y) + center.y);
 			currTile.addPoint(vertex.x, vertex.y);
 			vertex.translate(0, 1);
 			currTile.addPoint(vertex.x, vertex.y);
@@ -137,23 +124,38 @@ public class Polyomino {
 		for(Point p : this.tiles){
 			for(int i=0; i<f; i++){
 				for(int j=0; j<f; j++){
-					polyomino.addTile(f*p.x+i, f*p.y+j);
+					polyomino.addTile(f*(p.x - bounds.x) + i + bounds.x,
+							f*(p.y - bounds.y) + j + bounds.y);
 				}
 			}
 		}
 		return polyomino;
 	}
 
+	public Polyomino translated(int x, int y){
+		Polyomino polyomino = new Polyomino();
+		polyomino.bounds = new Rectangle(this.bounds);
+		polyomino.bounds.translate(x, y);
+		polyomino.n = this.n;
+
+		for (Point p : this.tiles){
+			polyomino.tiles.add(new Point(p.x + x, p.y + y));
+		}
+		return polyomino;
+	}
 	public void translate(int x, int y){
-		this.corner.translate(x, y);
+		this.bounds.translate(x, y);
 		for (Point p : this.tiles){
 			p.translate(x, y);
 		}
 		this.tiles = new HashSet<Point>(this.tiles);
 	}
 
+	public Polyomino recentered(){
+		return this.translated(-this.bounds.x, -this.bounds.y);
+	}
 	public void recenter(){
-		this.translate(-this.corner.x, -this.corner.y);
+		this.translate(-this.bounds.x, -this.bounds.y);
 	}
 
 	public Polyomino rotation(int n){
@@ -166,24 +168,24 @@ public class Polyomino {
 	public Polyomino turn(){
 		Polyomino polyomino = new Polyomino();
 		for(Point p : this.tiles){
-			polyomino.addTile(corner.x + (p.y - corner.y),
-					corner.y + width-1 - (p.x - corner.x));
+			polyomino.addTile(bounds.x + (p.y - bounds.y),
+					bounds.y + bounds.width - (p.x - bounds.x));
 		}
 		return polyomino;
 	}
 	public Polyomino counterTurn(){
 		Polyomino polyomino = new Polyomino();
 		for(Point p : this.tiles){
-			polyomino.addTile(corner.x + height-1 - (p.y - corner.y),
-					corner.y + (p.x - corner.x));
+			polyomino.addTile(bounds.x + bounds.height - (p.y - bounds.y),
+					bounds.y + (p.x - bounds.x));
 		}
 		return polyomino;
 	}
 	public Polyomino halfTurn(){
 		Polyomino polyomino = new Polyomino();
 		for(Point p : this.tiles){
-			polyomino.addTile(corner.x + width-1 - (p.x - corner.x),
-					corner.y + height-1 - (p.y - corner.y));
+			polyomino.addTile(bounds.x + bounds.width - (p.x - bounds.x),
+					bounds.y + bounds.height - (p.y - bounds.y));
 		}
 		return polyomino;
 	}
@@ -192,7 +194,7 @@ public class Polyomino {
 	public Polyomino symmetricalY() {
 		Polyomino polyomino = new Polyomino();
 		for(Point p : this.tiles){
-			polyomino.addTile(corner.x + width-1 - p.x, p.y);
+			polyomino.addTile(bounds.x + bounds.width - p.x, p.y);
 		}
 		return polyomino;
 	}
@@ -201,7 +203,7 @@ public class Polyomino {
 	public Polyomino symmetricalX() {
 		Polyomino polyomino = new Polyomino();
 		for(Point p : this.tiles){
-			polyomino.addTile(p.x, corner.y + this.height-1 - p.y);
+			polyomino.addTile(p.x, bounds.y + bounds.height - p.y);
 		}
 		return polyomino;
 	}
@@ -212,30 +214,26 @@ public class Polyomino {
 		Polyomino polyomino = (Polyomino) obj;
 		if(this == polyomino) return true;
 		if(this.n != polyomino.n) return false;
-		if(!this.corner.equals(polyomino.corner)) return false;
-		if(!(this.width == polyomino.width)
-				|| !(this.height == polyomino.height)){
-			return false;
-		}
+		if(!this.bounds.equals(polyomino.bounds)) return false;
 		return this.tiles.equals(polyomino.tiles);
 	}
 	@Override
 	public int hashCode() {
-		return this.n*this.width+this.height*this.corner.x-this.corner.y;
+		return n*bounds.width+bounds.height*bounds.x-bounds.y;
 	}
 
 	// A method that reads an array of polyominoes from a file
 	public static Polyomino[] fileReader(String filename) {
 		LinkedList<Polyomino> polyominoList = new LinkedList<Polyomino>();
 		BufferedReader reader;
-		int xSpacing = 0, ySpacing = 0;
+		//int xSpacing = 0, ySpacing = 0;
 		try {
 			reader = new BufferedReader(new FileReader(filename));
 			String line = reader.readLine();
 			while (line != null) {
 				Polyomino polyo = new Polyomino(line);
-				polyo.translate(xSpacing, ySpacing);
-				xSpacing += polyo.width;
+				//polyo.translate(xSpacing, ySpacing);
+				//xSpacing += polyo.bounds.width;
 
 				polyominoList.add(polyo);
 				line = reader.readLine();
