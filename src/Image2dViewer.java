@@ -1,6 +1,6 @@
 import javax.swing.JFrame;
 import java.awt.FlowLayout;
-import java.awt.Point;
+//import java.awt.Point;
 
 //Frame for the vizualization
 class Image2dViewer extends JFrame {

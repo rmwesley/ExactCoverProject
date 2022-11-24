@@ -2,7 +2,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import java.awt.Color;
-import java.awt.Point;
+//import java.awt.Point;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Polygon;
@@ -37,7 +37,7 @@ public class Polyomino {
 	public Polyomino(HashSet<Point> tiles) {
 		this.tiles = new HashSet<Point>();
 		for (Point p : tiles){
-			this.addTile(new Point(p.x, p.y));
+			this.addTile((Point) p.clone());
 		}
 		this.color = new Color(255, 0, 0);
 	}
@@ -259,7 +259,7 @@ public class Polyomino {
 
 				Polyomino currPolyomino = new Polyomino();
 				for(Point temp: this.tiles){
-					currPolyomino.addTile(new Point(temp.x, temp.y));
+					currPolyomino.addTile((Point) temp.clone());
 				}
 				//System.out.println(currTile);
 
@@ -288,7 +288,7 @@ public class Polyomino {
 
 	//			HashSet<Point> currTiles = new HashSet<Point>();
 	//			for(Point temp: this.tiles){
-	//				currTiles.add(new Point(temp.x, temp.y));
+	//				currTiles.add((Point) temp.clone());
 	//			}
 	//			//System.out.println(currTile);
 
@@ -333,7 +333,7 @@ public class Polyomino {
 				Point neighbor = new Point(p.x + (i%2), p.y + ((i+1)%2));
 				if(!this.tiles.contains(neighbor)) {
 					Polyomino child = new Polyomino(this.tiles);
-					child.addTile(new Point(neighbor.x, neighbor.y));
+					child.addTile((Point) neighbor.clone());
 					child.recenter();
 					if(children.contains(child)) {
 						continue;
