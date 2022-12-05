@@ -308,30 +308,45 @@ public abstract class Test {
 
 	// Function that counts for n and k all the polyominoes of size n that can cover their own dilate by k, allowing rotations and symmetries.
 	public static void countDilateFixed(int n, int k) {
-		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFixed(n, k);
+		LinkedList<HashSet<Polyomino>> polyominoes =
+			Polyomino.dilateCoverFixed(n, k);
 		System.out.print("There are " + polyominoes.size() + " fixed polyominoes of size " + n + " that cover their " + k + "-dilation");
 	}
 
 	// Function that counts for n and k all the polyominoes of size n that can cover their own dilate by k, without rotations and symmetries
 	public static void countDilateFree(int n, int k) {
-		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFree(n, k);
+		LinkedList<HashSet<Polyomino>> polyominoes =
+			Polyomino.dilateCoverFree(n, k);
 		System.out.print("There are " + polyominoes.size() + " free polyominoes of size " + n + " that cover their " + k + "-dilation");
 	}
 
 	// Function that determines for n, and k all the polyominoes of size n that can cover their own k-dilation, and represents them
 	public static void dilateRepresentFixed(int n, int k) {
 		Image2dViewer frame = new Image2dViewer();
-		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFixed(n, k);
+		LinkedList<HashSet<Polyomino>> coverings =
+			Polyomino.dilateCoverFixed(n, k);
 
-		Point center = new Point();
-
-		frame.addPolyominoes(polyominoes, center);
+		for (HashSet<Polyomino> solution : coverings){
+			Image2d component = new Image2d();
+			component.addPolyominoes(solution, "random");
+			frame.add(component);
+		}
+		frame.pack();
+		frame.setVisible(true);
 	}
 
 	// Function that determines for n, and k all the polyominoes of size n that can cover their own k-dilation, and represents them
 	public static void dilateRepresentFree(int n, int k) {
 		Image2dViewer frame = new Image2dViewer();
-		HashSet<Polyomino> polyominoes = Polyomino.dilateCoverFree(n, k);
-		frame.addPolyominoes(polyominoes, new Point(0,0));
+		LinkedList<HashSet<Polyomino>> coverings =
+			Polyomino.dilateCoverFree(n, k);
+
+		for (HashSet<Polyomino> solution : coverings){
+			Image2d component = new Image2d();
+			component.addPolyominoes(solution, "random");
+			frame.add(component);
+		}
+		frame.pack();
+		frame.setVisible(true);
 	}	
 }

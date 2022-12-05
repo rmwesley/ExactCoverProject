@@ -14,14 +14,15 @@ public class Main {
 		//Test.fixedGenerator(4);
 		//Test.ECPolyominoExample();
 		//Test.ECPolyominoExample2();
-		Test.GenericECExample();
+		//Test.GenericECExample();
 		//Test.ExactcoverExample();
 		//Test.DancingLinks();
 		//Test.DancingLinksImage();
-		//Test.countDilateFixed(2, 4);
+		//Test.countDilateFixed(4, 3);
+		//Test.countDilateFree(4, 3);
 
-		//Test.dilateRepresentFixed(3, 3);
-		//Test.dilateRepresentFree(3, 3);
+		Test.dilateRepresentFixed(4, 3);
+		Test.dilateRepresentFree(4, 3);
 	}
 }
 

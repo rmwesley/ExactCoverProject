@@ -482,6 +482,9 @@ public class Polyomino {
 		return matrix;
 	}
 
+	public ECPolyomino getECP(HashSet<Polyomino> pieces){
+		return new ECPolyomino(this, pieces);
+	}
 	// Creates covering problem for this polyomino
 	public GenericsEC<Point> getEC(Iterable<Polyomino> polyominoPieces){
 		HashSet<Point> groundSet = this.tiles;
@@ -541,43 +544,50 @@ public class Polyomino {
 	}
 
 	// Returns, for a given n and k, all the polyominoes of size n that can cover their k-dilation (with rotation)
-	public static HashSet<Polyomino> dilateCoverFree(int n, int k) {
-		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFixed(n);
-		HashSet<Polyomino> satisfyingPolyominoes = new HashSet<Polyomino>();
+	public static LinkedList<HashSet<Polyomino>> dilateCoverFree(
+			int n, int k) {
+		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFree(n);
+		HashSet<Polyomino> satisfyingPolyominoes =
+			new HashSet<Polyomino>();
+		LinkedList<HashSet<Polyomino>> coverings =
+			new LinkedList<HashSet<Polyomino>>();
+
 		for (Polyomino originalP : polyominoes) {
 			Polyomino dilatedP = originalP.dilateBy(k);
 			HashSet<Polyomino> pieces = originalP.getFittings(dilatedP);
 			HashSet<Polyomino> equivalent = originalP.getEquivalent();
 
 			for(Polyomino temp : equivalent){
-			// This correction was used because rotations had errors with
-			// Rectangle bounds. Now obsolete since error was corrected.
-			//	temp.recenter();
 				pieces.addAll(temp.getFittings(dilatedP));
 			}
-			//equivalent = new HashSet<Polyomino>(equivalent);
 
-			if(!dilatedP.getEC(pieces).covers(true).isEmpty()
+			HashSet<HashSet<Polyomino>> solutions =
+				dilatedP.getECP(pieces).covers(true);
+			if(!solutions.isEmpty()
 					&& Collections.disjoint(equivalent,
 						satisfyingPolyominoes)) {
 				satisfyingPolyominoes.add(originalP);
+				coverings.add(solutions.iterator().next());
 			}
 		}
-		return satisfyingPolyominoes;
+		return coverings;
 	}
 	// Returns, for a given n and k, all the polyominoes of size n that can cover their k-dilation (without rotations)
-	public static HashSet<Polyomino> dilateCoverFixed(int n, int k) {
-		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFixed(n);
-		HashSet<Polyomino> satisfyingPolyominoes = new HashSet<Polyomino>();
+	public static LinkedList<HashSet<Polyomino>> dilateCoverFixed(
+			int n, int k) {
+		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFree(n);
+		LinkedList<HashSet<Polyomino>> coverings =
+			new LinkedList<HashSet<Polyomino>>();
 		for (Polyomino originalP : polyominoes) {
-			//originalP.recenter();
 			Polyomino dilatedP = originalP.dilateBy(k);
 			HashSet<Polyomino> pieces = originalP.getFittings(dilatedP);
 
-			if(!dilatedP.getEC(pieces).covers(true).isEmpty()) {
-				satisfyingPolyominoes.add(originalP);
+			HashSet<HashSet<Polyomino>> solutions =
+				dilatedP.getECP(pieces).covers(true);
+			if(!solutions.isEmpty()) {
+				coverings.add(solutions.iterator().next());
 			}
 		}
-		return satisfyingPolyominoes;
+		return coverings;
 	}
 }
