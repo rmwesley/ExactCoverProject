@@ -327,24 +327,28 @@ public class Polyomino {
 	// Returns all fixed Polyominoes associated to a given Polyomino
 	// i.e. all the equivalence classes
 	public HashSet<Polyomino> getEquivalent() {
-		HashSet<Polyomino> polyominoes = new HashSet<Polyomino>();
+		return this.getEquivalent(0);
+	}
+	public HashSet<Polyomino> getEquivalent(int equivalenceType) {
+		HashSet<Polyomino> equivalent = this.getRotations();
+		if (equivalenceType == 1) return equivalent;
+		equivalent.addAll(this.getSymmetries());
+		return equivalent;
+	}
+	public HashSet<Polyomino> getRotations() {
+		HashSet<Polyomino> equivalent = new HashSet<Polyomino>();
 		for(int i=0; i<4; i++){
-			polyominoes.add(this.rotation(i));
-			//Polyomino P = this.rotation(i);
-			//if (!polyominoes.contains(P)) {
-			//	polyominoes.add(P);
-			//}
+			equivalent.add(this.rotation(i));
 		}
-
+		return equivalent;
+	}
+	public HashSet<Polyomino> getSymmetries(){
+		HashSet<Polyomino> equivalent = new HashSet<Polyomino>();
 		Polyomino temp = this.symmetricalY();
 		for(int i=0; i<4; i++){
-			polyominoes.add(temp.rotation(i));
-			//Polyomino P = temp.rotation(i);
-			//if (!polyominoes.contains(P)) {
-			//	polyominoes.add(P);
-			//}
+			equivalent.add(temp.rotation(i));
 		}
-		return polyominoes;
+		return equivalent;
 	}
 
 	// Returns the polyominoes equal to this
@@ -404,9 +408,20 @@ public class Polyomino {
 		}
 	}
 
-	// Verifies if two Polyominoes are equivalent
 	public boolean isEquivalentTo(Polyomino polyomino) {
-		return this.getEquivalent().contains(polyomino);
+		return this.isEquivalentTo(polyomino, 0);
+	}
+	// Verifies if two Polyominoes are equivalent
+	public boolean isEquivalentTo(
+			Polyomino polyomino, int equivalenceType) {
+
+		HashSet<Polyomino> equivalent =
+			this.getEquivalent(equivalenceType);
+
+		for(Polyomino temp : equivalent){
+			temp.recenter(new Point(polyomino.bounds.getLocation()));
+		}
+		return equivalent.contains(polyomino);
 	}
 
 	// Returns the exact cover problem of this and a set of polyominoes, not allowing repetitions of equivalent elements from pieces
