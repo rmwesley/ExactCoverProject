@@ -19,6 +19,13 @@ public class Image2d extends JComponent {
 	public Image2d() {
 		this.coloredPolygons = new LinkedList<ColoredPolygon>();
 	}
+	public Image2d(Polyomino polyomino) {
+		this.coloredPolygons = new LinkedList<ColoredPolygon>();
+		HashSet<Polygon> polygons = polyomino.getPolygons();
+		for(Polygon polygon : polygons){
+			this.addColoredPolygon(polygon, polyomino.color);
+		}
+	}
 	public Image2d(Polyomino polyomino, Point center) {
 		this.coloredPolygons = new LinkedList<ColoredPolygon>();
 		HashSet<Polygon> polygons = polyomino.getPolygons(center);
@@ -26,7 +33,36 @@ public class Image2d extends JComponent {
 			this.addColoredPolygon(polygon, polyomino.color);
 		}
 	}
-
+	public void addPolyomino(Polyomino polyomino, Point center) {
+		HashSet<Polygon> polygons = polyomino.getPolygons(new Point(polyomino.bounds.getLocation()));
+		for(Polygon polygon : polygons){
+			this.addColoredPolygon(polygon, polyomino.color);
+		}
+	}
+	public void addPolyomino(Polyomino polyomino) {
+		HashSet<Polygon> polygons = polyomino.getPolygons();
+		for(Polygon polygon : polygons){
+			this.addColoredPolygon(polygon, polyomino.color);
+		}
+	}
+	public void addPolyominoes(Iterable<Polyomino> polyominoes) {
+		for(Polyomino temp : polyominoes){
+			this.addPolyomino(temp);
+		}
+	}
+	public void addPolyominoes(Iterable<Polyomino> polyominoes,
+			String str) {
+		for(Polyomino temp : polyominoes){
+			if(str == "random") temp.randomColor();
+			if(str == "bw") temp.randomGray();
+			this.addPolyomino(temp);
+		}
+	}
+	public void addPolyominoes(Polyomino[] polyominoes){
+		for (int i=0; i < polyominoes.length; i++){
+			this.addPolyomino(polyominoes[i]);
+		}
+	}
 	public void addColoredPolygon(Polygon polygon, Color color) {
 		coloredPolygons.add(new ColoredPolygon(polygon, color));
 	}

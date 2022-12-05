@@ -63,24 +63,35 @@ public abstract class Test {
 	}
 	static void GenericECExample() {
 		Polyomino p = new Polyomino("[(0,0), (0,1), (1,0)]");
-		//p = new Polyomino("[(0,0), (0,1)]");
 		Polyomino bigP = p.dilateBy(3);
-		//System.out.println(p1.getFittings(bigP).size());
 		HashSet<Polyomino> equivalent = p.getEquivalent();
-		Image2dViewer frame = new Image2dViewer(bigP.draw(new Point()));
-		frame.addPolyominoes(equivalent, new Point(0, 6));
 
+		//Image2dViewer frame =
+		//	new Image2dViewer(bigP.draw(new Point()));
+		//frame.addPolyominoes(equivalent, new Point(0, 6));
 		HashSet<Polyomino> pieces = new HashSet<Polyomino>();
-		//HashSet<Polyomino> pieces = p.getFittings(bigP);
 		for (Polyomino temp : equivalent){
 			pieces.addAll(temp.getFittings(bigP));
 		}
 
 		GenericsEC<Point> problem = bigP.getEC(pieces);
-		System.out.println("Solutions: ");
+
+		Image2dViewer frame = new Image2dViewer();
 		for (HashSet<HashSet<Point>> solution :  problem.covers(true)){
-			System.out.println("\n" + solution);
+			Image2d component = new Image2d();
+			HashSet<Polyomino> polyominoesSol =	new HashSet<Polyomino>();
+
+			for (HashSet<Point> tiles : solution){
+				Polyomino temp = new Polyomino(tiles);
+				temp.randomColor();
+				polyominoesSol.add(temp);
+
+				component.addPolyomino(temp);
+			}
+			frame.add(component);
 		}
+		frame.pack();
+		frame.setVisible(true);
 	}
 
 	// A test for the exact cover problem

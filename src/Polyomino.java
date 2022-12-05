@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Collections;
 
+import java.util.Random;
+
 //The class Polyomino, the heart of the subject
 public class Polyomino {
 
@@ -24,6 +26,7 @@ public class Polyomino {
 	public int n; // Number of tiles in the polyomino
 	public Rectangle bounds; // Rectangle with bounds of the polyomino
 	public Color color;
+	private static Random random = new Random(0);
 
 	// Initializes an empty Polyomino
 	public Polyomino() {
@@ -31,7 +34,6 @@ public class Polyomino {
 		this.n = 0;
 		this.bounds = new Rectangle();
 		this.color = new Color(255, 0, 0);
-		//this.color = new Color((int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)),(int)(Math.random() * ((254 - 0) + 1)));
 	}
 	// Constructs a polyomino from a set of tiles
 	public Polyomino(HashSet<Point> tiles) {
@@ -56,7 +58,19 @@ public class Polyomino {
 		}
 		this.color = new Color(255, 0, 0);
 	}
-
+	public void randomGray(){
+		int temp = random.nextInt(255);
+		color = new Color(temp, temp, temp);
+	}
+	public void randomColor(){
+		color = new Color(
+				random.nextInt(255),
+				random.nextInt(255),
+				random.nextInt(255));
+	}
+	public void setColor(Color color){
+		this.color = color;
+	}
 	// Adds a point to a Polyomino's tiling
 	public void addTile(Point p){
 		if(this.tiles.contains(p)) return;
@@ -76,14 +90,22 @@ public class Polyomino {
 		this.addTile(new Point(v[0], v[1]));
 	}
 
+	// Determines the coordinates of the
+	// vertices of the tiles composing the polyomino
 	public HashSet<Polygon> getPolygons() {
+		return this.getPolygons(new Point(this.bounds.getLocation()));
+	}
+	// Determines the coordinates of the vertices of the tiles
+	// composing the polyomino relative to a new center
+	public HashSet<Polygon> getPolygons(Point center) {
 		HashSet<Polygon> polygons = new HashSet<Polygon>();
 		Polygon currTile = new Polygon();
 		Point vertex = new Point();
 
 		for(Point p : this.tiles){
 			currTile = new Polygon();
-			vertex = new Point(2*p.x, 2*p.y);
+			vertex = new Point(2*(p.x - this.bounds.x + center.x),
+					2*(p.y - this.bounds.y + center.y));
 			currTile.addPoint(vertex.x, vertex.y);
 			vertex.translate(0, 1);
 			currTile.addPoint(vertex.x, vertex.y);
@@ -95,25 +117,11 @@ public class Polyomino {
 		}
 		return polygons;
 	}
-	// Determines the coordinates of the
-	// vertices of the tiles composing the polyomino
-	public HashSet<Polygon> getPolygons(Point center) {
-		HashSet<Polygon> polygons = new HashSet<Polygon>();
-		Polygon currTile = new Polygon();
-		Point vertex = new Point();
 
 		for(Point p : this.tiles){
-			currTile = new Polygon();
-			vertex = new Point(2*(p.x - this.bounds.x) + center.x,
-					2*(p.y - this.bounds.y) + center.y);
-			currTile.addPoint(vertex.x, vertex.y);
-			vertex.translate(0, 1);
-			currTile.addPoint(vertex.x, vertex.y);
-			vertex.translate(1, 0);
-			currTile.addPoint(vertex.x, vertex.y);
-			vertex.translate(0, -1);
-			currTile.addPoint(vertex.x, vertex.y);
-			polygons.add(currTile);
+			for(int i=0; i<f; i++){
+				polyomino.addTile(f*(p.x - bounds.x) + i + bounds.x, p.y);
+			}
 		}
 		return polygons;
 	}
@@ -125,7 +133,7 @@ public class Polyomino {
 			for(int i=0; i<f; i++){
 				for(int j=0; j<f; j++){
 					polyomino.addTile(f*(p.x - bounds.x) + i + bounds.x,
-							f*(p.y - bounds.y) + j + bounds.y);
+						f*(p.y - bounds.y) + j + bounds.y);
 				}
 			}
 		}
@@ -156,6 +164,9 @@ public class Polyomino {
 	}
 	public void recenter(){
 		this.translate(-this.bounds.x, -this.bounds.y);
+	}
+	public void recenter(Point center){
+		this.translate(center.x - this.bounds.x, center.y - this.bounds.y);
 	}
 
 	public Polyomino rotation(int n){
@@ -246,29 +257,29 @@ public class Polyomino {
 	}
 
 	public HashSet<Polyomino> getFittings(Polyomino polyomino){
+		//System.out.println("\n" + this);
+		//System.out.println(polyomino);
 		HashSet<Polyomino> fittingPolyominoes =	new HashSet<Polyomino>();
 
-		Point fixedPoint = this.tiles.iterator().next();
+		Point fixedPoint = (Point) this.tiles.iterator().next().clone();
 		this.translate(-fixedPoint.x, -fixedPoint.y);
 
 		for(Point p: polyomino.tiles){
 			this.translate(p.x, p.y);
 			if(polyomino.tiles.containsAll(this.tiles)){
-				//System.out.println("\n" + this);
-				//System.out.println(polyomino);
 
 				Polyomino currPolyomino = new Polyomino();
 				for(Point temp: this.tiles){
 					currPolyomino.addTile((Point) temp.clone());
 				}
-				//System.out.println(currTile);
+				//System.out.println(currPolyomino);
 
 				fittingPolyominoes.add(currPolyomino);
-				//fittingTiles.add(new HashSet<Point>(this.tiles));
 			}
 			this.translate(-p.x, -p.y);
 		}
 		this.translate(fixedPoint.x, fixedPoint.y);
+		//System.out.println("\nAfter\n" + this + "\n\n");
 		return fittingPolyominoes;
 	}
 

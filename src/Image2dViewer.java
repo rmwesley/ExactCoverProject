@@ -35,8 +35,20 @@ class Image2dViewer extends JFrame {
 		this.pack();
 		this.setVisible(true);
 	}
+	public void addPolyomino(Polyomino polyomino){
+		this.add(new Image2d(polyomino));
+		this.pack();
+		this.setVisible(true);
+	}
 	public void addPolyomino(Polyomino polyomino, Point center){
 		this.add(new Image2d(polyomino, center));
+		this.pack();
+		this.setVisible(true);
+	}
+	public void addPolyominoes(Iterable<Polyomino> polyominoes){
+		for (Polyomino polyomino : polyominoes){
+			this.addPolyomino(polyomino);
+		}
 		this.pack();
 		this.setVisible(true);
 	}
@@ -44,6 +56,13 @@ class Image2dViewer extends JFrame {
 			Iterable<Polyomino> polyominoes, Point center){
 		for (Polyomino polyomino : polyominoes){
 			this.addPolyomino(polyomino, center);
+		}
+		this.pack();
+		this.setVisible(true);
+	}
+	public void addPolyominoes(Polyomino[] polyominoes){
+		for (int i=0; i < polyominoes.length; i++){
+			this.addPolyomino(polyominoes[i]);
 		}
 		this.pack();
 		this.setVisible(true);
