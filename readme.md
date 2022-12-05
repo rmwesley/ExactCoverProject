@@ -27,8 +27,8 @@ PDF given to us by our own professor Vincent Pilaud,
 as well as the Dancing Links article by PhD D. Knuth.
 
 We were provided with a straightforward algorithm/pseudocode on our project
-description, followed by D. Knuth's algorithm, both to be implemented and
-compared in efficiency and complexity.
+description, followed by D. Knuth's "algorithm X", both to be implemented
+and compared in efficiency and complexity.
 The first solver was less memory consuming but generally slower than the
 DL algorithm.
 

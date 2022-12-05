@@ -118,14 +118,26 @@ public class Polyomino {
 		return polygons;
 	}
 
+	// Stretches a polyomino by a factor f in the X direction
+	public Polyomino stretchX(int f){
+		Polyomino polyomino = new Polyomino(this.tiles);
 		for(Point p : this.tiles){
 			for(int i=0; i<f; i++){
 				polyomino.addTile(f*(p.x - bounds.x) + i + bounds.x, p.y);
 			}
 		}
-		return polygons;
+		return polyomino;
 	}
-
+	// Stretches a polyomino by a factor f in the Y direction
+	public Polyomino stretchY(int f){
+		Polyomino polyomino = new Polyomino(this.tiles);
+		for(Point p : this.tiles){
+			for(int j=0; j<f; j++){
+				polyomino.addTile(p.x, f*(p.y - bounds.y) + j + bounds.y);
+			}
+		}
+		return polyomino;
+	}
 	// Dilates a polyomino by a factor f.
 	public Polyomino dilateBy(int f){
 		Polyomino polyomino = new Polyomino(this.tiles);

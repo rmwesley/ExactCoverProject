@@ -42,11 +42,13 @@ public class GenericsEC<E> {
 			//System.out.println("\nPiece contains: " + piece);
 			for (E elementCovered : piece) {
 				remaining.groundSet.remove(elementCovered);
-				if(repeatable) continue;
 				for(HashSet<E> otherPiece : pieces){
 					if(otherPiece.contains(elementCovered)) {
 						remaining.pieces.remove(otherPiece);
 					}
+					//if(!repeatable && otherPiece.isEquivalent(piece)){
+					//	remaining.pieces.remove(otherPiece);	
+					//};
 				}
 			}
 			//System.out.println("Remaining: " + remaining);
@@ -65,10 +67,6 @@ public class GenericsEC<E> {
 			   	//remaining.covers(repeatable, depth);
 			//System.out.println("\n\nRecursion: " + recursiveAllSolutions);
 
-			// An empty return means no solution found in further calls
-			if(recursiveAllSolutions.isEmpty()) {
-				continue;
-			}
 			// If a solution is found in later calls, we add the current piece as part of the solution to each entry of setOfSolutions
 			for (HashSet<HashSet<E>> solution : recursiveAllSolutions) {
 				solution.add(piece);

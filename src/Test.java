@@ -61,6 +61,61 @@ public abstract class Test {
 		frame.revalidate();
 		frame.repaint();
 	}
+
+	static void ECPolyominoExample() {
+		Polyomino p = new Polyomino("[(0,0), (0,1), (1,0)]");
+		Polyomino bigP = p.dilateBy(3);
+		HashSet<Polyomino> equivalent = p.getEquivalent();
+		HashSet<HashSet<Polyomino>> solutions =
+			new HashSet<HashSet<Polyomino>>();
+
+		HashSet<Polyomino> pieces = new HashSet<Polyomino>();
+		for (Polyomino temp : equivalent){
+			pieces.addAll(temp.getFittings(bigP));
+		}
+		ECPolyomino problem = new ECPolyomino(bigP, pieces);
+
+		Image2dViewer frame = new Image2dViewer();
+		for (HashSet<Polyomino> solution :  problem.covers(true, 0)){
+			Image2d component = new Image2d();
+			component.addPolyominoes(solution, "random");
+			//Image2d component = new Image2d();
+
+			//for (Polyomino polyomino : solution){
+			//	polyomino.randomColor();
+			//	solution.add(polyomino);
+			//	component.addPolyomino(polyomino);
+			//}
+			frame.add(component);
+		}
+		frame.pack();
+		frame.setVisible(true);
+	}
+
+	static void ECPolyominoExample2() {
+		Polyomino bigP = new Polyomino("[(0,0)]");
+		bigP = bigP.stretchX(4);
+		bigP = bigP.stretchY(3);
+
+		HashSet<Polyomino> originalPieces = Polyomino.naiveGenerateFixed(3);
+		HashSet<Polyomino> pieces = new HashSet<Polyomino>();
+
+		for (Polyomino temp : originalPieces){
+			pieces.addAll(temp.getFittings(bigP));
+		}
+
+		ECPolyomino problem = new ECPolyomino(bigP, pieces);
+
+		Image2dViewer frame = new Image2dViewer();
+		for (HashSet<Polyomino> solution : problem.covers(true, 0)){
+			Image2d component = new Image2d();
+			component.addPolyominoes(solution, "random");
+			frame.add(component);
+		}
+		frame.pack();
+		frame.setVisible(true);
+	}
+
 	static void GenericECExample() {
 		Polyomino p = new Polyomino("[(0,0), (0,1), (1,0)]");
 		Polyomino bigP = p.dilateBy(3);
