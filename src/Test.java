@@ -2,8 +2,10 @@ import java.awt.Color;
 //import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Dimension;
+
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.ArrayList;
 
 // Here we defined some test funtions, which can be used to make tests.
 public abstract class Test {
@@ -150,23 +152,25 @@ public abstract class Test {
 	}
 
 	// A test for the exact cover problem
-	static void ExactcoverExample() {
-		int[][] M = new int[6][7];
+	static void ExactcoverExample() throws Exception {
 		HashSet<HashSet<Node>> NodeList = new HashSet<HashSet<Node>>();
 
-		// Hint: Change M[1] so that it becomes equal to M[3] to visualize the case with 2 different solutions
-		M[0] = new int[] {0, 0, 1, 0, 1, 1, 0};
-		M[1] = new int[] {1, 0, 0, 1, 0, 0, 1};
-		M[2] = new int[] {0, 1, 1, 0, 0, 1, 0};
-		M[3] = new int[] {1, 0, 0, 1, 0, 0, 0};
-		M[4] = new int[] {0, 1, 0, 0, 0, 0, 1};
-		M[5] = new int[] {0, 0, 0, 1, 1, 0, 1};
+		int[][] matrix = new int[6][7];
+		matrix[0] = new int[] {0, 0, 1, 0, 1, 1, 0};
+		matrix[1] = new int[] {1, 0, 0, 1, 0, 0, 1};
+		matrix[2] = new int[] {0, 1, 1, 0, 0, 1, 0};
+		matrix[3] = new int[] {1, 0, 0, 1, 0, 0, 0};
+		matrix[4] = new int[] {0, 1, 0, 0, 0, 0, 1};
+		matrix[5] = new int[] {0, 0, 0, 1, 1, 0, 1};
+		// Hint to test the case with 2 solutions:
+		// Make matrix[1] = matrix[3]
+		matrix[1] = matrix[3];
 
-		System.out.println('\n' + visualizeMatrix(M));
+		System.out.println('\n' + visualizeMatrix(matrix));
 
 		// Naive solution:
 		long startTime = System.nanoTime();
-		HashSet<HashSet<Integer>> Solutions = ExactCover.cover(new int[M[0].length], M);
+		HashSet<HashSet<Integer>> Solutions = ExactCover.cover(new int[matrix[0].length], matrix);
 		long endTime = System.nanoTime();
 		System.out.println("Took "+ (endTime - startTime) + " ns");
 
@@ -179,20 +183,14 @@ public abstract class Test {
 		}
 		System.out.println("\nNumber of solutions: " + Solutions.size());
 
-		DancingLinks DL = new DancingLinks(M);
+		Column DL = new Column(matrix);
 
 		// Checking if DL was correctly constructed
-		M = new int[6][7];
-		for (Column x = (Column) DL.Row[DL.Row.length - 1].R; x != DL.Row[DL.Row.length - 1]; x = (Column) x.R) {
-
-			for (Node y = x.D; y != x; y = y.D) {
-				M[y.locator][Integer.parseInt(y.C.N)] = 1;
-			}
-		}
-		// System.out.print(visualizeMatrix(M));
+		matrix = new int[6][7];
+		// System.out.print(visualizeMatrix(matrix));
 
 		startTime = System.nanoTime();
-		NodeList = DL.exactCoverNode();
+		NodeList = DL.exactCover();
 		endTime = System.nanoTime();
 		System.out.println("Took "+ (endTime - startTime) + " ns");
 
@@ -200,70 +198,96 @@ public abstract class Test {
 	}
 
 	// A test of the Dancing links algorithm
-	static void TestDancingLinks() {
-		int[][] M = new int[6][7];
+	static void DancingLinks() throws Exception{
 		HashSet<HashSet<Node>> NodeList = new HashSet<HashSet<Node>>();
 
-		// Hint: Change M[1] so that it becomes equal to M[3] to visualize the case with 2 different solutions
+		int[][] matrix = new int[6][7];
+		matrix[0] = new int[] {0, 0, 1, 0, 1, 1, 0};
+		matrix[1] = new int[] {1, 0, 0, 1, 0, 0, 1};
+		matrix[2] = new int[] {0, 1, 1, 0, 0, 1, 0};
+		matrix[3] = new int[] {1, 0, 0, 1, 0, 0, 0};
+		matrix[4] = new int[] {0, 1, 0, 0, 0, 0, 1};
+		matrix[5] = new int[] {0, 0, 0, 1, 1, 0, 1};
+		// Hint to test the case with 2 solutions:
+		// Make matrix[1] = matrix[3]
+		matrix[1] = matrix[3];
 
-		M[0] = new int[] {0, 0, 1, 0, 1, 1, 0};
-		M[1] = new int[] {1, 0, 0, 1, 0, 0, 0};
-		M[2] = new int[] {0, 1, 1, 0, 0, 1, 0};
-		M[3] = new int[] {1, 0, 0, 1, 0, 0, 0};
-		M[4] = new int[] {0, 1, 0, 0, 0, 0, 1};
-		M[5] = new int[] {0, 0, 0, 1, 1, 0, 1};
-
-		System.out.println('\n' + visualizeMatrix(M));
-
+		System.out.println('\n' + visualizeMatrix(matrix));
 		// Naive solution:
-		long startTime = System.nanoTime();
-		HashSet<HashSet<Integer>> Solutions = ExactCover.cover(new int[M[0].length], M);
-		long endTime = System.nanoTime();
 
-		for (HashSet<Integer> solution : Solutions) {
-			System.out.print("\nSolution: ");
-			for (Integer i : solution) {
-				System.out.print(" " + i);
-			}
-		}
-		System.out.println("\nNumber of solutions: " + Solutions.size());
+		long startTime = System.nanoTime();
+		HashSet<HashSet<Integer>> Solutions = ExactCover.cover(new int[matrix[0].length], matrix);
+		long endTime = System.nanoTime();
 		System.out.println("Took "+ (endTime - startTime) + " ns");
 
-		DancingLinks DL = new DancingLinks(M);
+		int counter = 0;
+		for (HashSet<Integer> solution : Solutions) {
+			System.out.print("\nSolution " + counter + ": " + solution);
+			counter++;
+		}
 
-		//Checking if DL was correctly constructed:
+		System.out.println("\nNumber of solutions: " + Solutions.size());
 
-		/*		M = new int[6][7];
-				for (Column x = (Column) DL.Row[DL.Row.length - 1].R; x != DL.Row[DL.Row.length - 1]; x = (Column) x.R) {
+		Column column = new Column(matrix);
 
-				for (Node y = x.D; y != x; y = y.D) {
-				M[y.locator][Integer.parseInt(y.C.N)] = 1;
-				}
-				}*/
-
-		//		System.out.print(visualizeMatrix(M));
+		System.out.println(visualizeMatrix(matrix));
 
 		startTime = System.nanoTime();
-		NodeList = DL.exactCoverNode();
+		NodeList = column.exactCover();
 		endTime = System.nanoTime();
 
-		for (HashSet<Node> solution : NodeList) {
-			System.out.print("\nSolution: ");
-			for (Node x : solution) {
-				System.out.print(" " + x.locator);
-			}
+		System.out.println("Took "+ (endTime - startTime) + " ns");
+
+		counter = 0;
+		for(HashSet<Node> solution : NodeList){
+			System.out.print("\nSolution " + counter + ": " + solution);
+			counter++;
+		}
+		System.out.println("\nNumber of solutions: " + NodeList.size());
+	}
+	static void DancingLinksImage() throws Exception{
+		Polyomino bigP = new Polyomino("[(0,0)]");
+
+		//bigP = bigP.stretchX(4);
+		//bigP = bigP.stretchY(3);
+		//HashSet<Polyomino> originalPieces =
+		//Polyomino.naiveGenerateFixed(3);
+
+		bigP = bigP.stretchX(6);
+		bigP = bigP.stretchY(4);
+		HashSet<Polyomino> originalPieces =
+			Polyomino.naiveGenerateFixed(4);
+		ArrayList<Polyomino> pieces = new ArrayList<Polyomino>();
+
+		for (Polyomino temp : originalPieces){
+			pieces.addAll(temp.getFittings(bigP));
 		}
 
-		System.out.println("\nNumber of solutions: " + NodeList.size());
-		System.out.println("Took "+ (endTime - startTime) + " ns");
+		Column column = new Column(bigP.getECMatrix(pieces));
+
+		Image2dViewer frame = new Image2dViewer();
+		for (HashSet<Node> solution : column.exactCover()){
+			HashSet<Polyomino> solutionPolyominoes =
+			   new HashSet<Polyomino>();
+			Image2d component = new Image2d();
+
+			for (Node node : solution){
+				solutionPolyominoes.add(pieces.get(node.getRowNumber()));
+			}
+
+			component.addPolyominoes(solutionPolyominoes, "random");
+			frame.add(component);
+		}
+		frame.pack();
+		frame.setVisible(true);
 	}
 
 	// Function to visualize a matrix
-	public static String visualizeMatrix(int[][] M) {
+	public static String visualizeMatrix(int[][] matrix) {
 		String S = new String();
-		for (int i = 0; i < M.length; i++) {
-			for (int j = 0; j < M[0].length; j++) {
-				S += String.valueOf(M[i][j]) + " ";
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				S += String.valueOf(matrix[i][j]) + " ";
 			}
 			S += "\n";
 		}
@@ -271,11 +295,11 @@ public abstract class Test {
 	}
 
 	// Function to visualize a matrix
-	public static String visualizeMatrix(boolean[][] M) {
+	public static String visualizeMatrix(boolean[][] matrix) {
 		String S = new String();
-		for (int i = 0; i < M.length; i++) {
-			for (int j = 0; j < M[0].length; j++) {
-				S += String.valueOf(M[i][j]) + " ";
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				S += String.valueOf(matrix[i][j]) + " ";
 			}
 			S += "\n";
 		}

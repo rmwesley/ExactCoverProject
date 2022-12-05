@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Collections;
+import java.util.Collection;
 
 import java.util.Random;
 
@@ -424,8 +425,10 @@ public class Polyomino {
 		return equivalent.contains(polyomino);
 	}
 
-	// Returns the exact cover problem of this and a set of polyominoes, not allowing repetitions of equivalent elements from pieces
-	public int[][] getUniqueECMatrix(HashSet<Polyomino> pieces) {
+	// Returns the exact cover problem of this and a set of polyominoes
+	// not allowing repetitions of equivalent elements from pieces
+	public int[][] getUniqueECMatrix(
+			Collection<Polyomino> pieces, int equivalenceType) {
 		int nPieces = pieces.size();
 		//int[][] matrix = new int[nPieces][this.n + nPieces];
 		//int[][] repetitions = new int[nPieces][nPieces];
@@ -437,10 +440,11 @@ public class Polyomino {
 		j = this.n;
 		HashSet<Polyomino> representants = new HashSet<Polyomino>();
 		HashMap<Polyomino, Integer> identifiers = new HashMap<Polyomino, Integer>();
-		//HashMap<Polyomino, int[]> matrixVectors = new HashMap<Polyomino, int[]>();
+		//HashMap<Polyomino, int[]> matrixVectors =
+		//new HashMap<Polyomino, int[]>();
 		for (Polyomino polyomino : pieces){
 			for (Polyomino rep : representants){
-				if(polyomino.isEquivalentTo(rep)){
+				if(polyomino.isEquivalentTo(rep, equivalenceType)){
 					repeated = true;
 					//vector = matrixVectors.get(rep);
 					//vector.set(i, 1);
@@ -479,7 +483,7 @@ public class Polyomino {
 	}
 
 	// Creates covering problem for this polyomino
-	public GenericsEC<Point> getEC(HashSet<Polyomino> polyominoPieces){
+	public GenericsEC<Point> getEC(Iterable<Polyomino> polyominoPieces){
 		HashSet<Point> groundSet = this.tiles;
 		HashSet<HashSet<Point>> pieces = new HashSet<HashSet<Point>>();
 		for (Polyomino polyomino : polyominoPieces){
@@ -488,11 +492,13 @@ public class Polyomino {
 		return new GenericsEC<Point>(groundSet, pieces);
 	}
 
-	// Returns the exact cover problem of this and a set of polyominoes, allowing repetitions of elements
-	public int[][] getECMatrix(HashSet<Polyomino> pieces) {
+	// Returns the exact cover problem of this and a set of polyominoes
+	// Allows repetitions of elements
+	public int[][] getECMatrix(Collection<Polyomino> pieces) {
 		int[][] matrix = new int[pieces.size()][this.n];
 		int i=0, j=0;
 		for (Polyomino polyomino : pieces) {
+			j = 0;
 			for (Point p : this.tiles) {
 				if(polyomino.tiles.contains(p)) {
 					matrix[i][j] = 1;

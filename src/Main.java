@@ -12,16 +12,16 @@ public class Main {
 		//Test.numberOfFixedPolyominosNaive(3);
 		//Test.freeGenerator(6);
 		//Test.fixedGenerator(4);
-		Test.ECPolyominoExample();
-		Test.ECPolyominoExample2();
+		//Test.ECPolyominoExample();
+		//Test.ECPolyominoExample2();
 		Test.GenericECExample();
 		//Test.ExactcoverExample();
-		//Test.TestDancingLinks();
-		//Test.testTiling();
+		//Test.DancingLinks();
+		//Test.DancingLinksImage();
 		//Test.countDilateFixed(2, 4);
 
-		Test.dilateRepresentFixed(3, 3);
-		Test.dilateRepresentFree(3, 3);
+		//Test.dilateRepresentFixed(3, 3);
+		//Test.dilateRepresentFree(3, 3);
 	}
 }
 
