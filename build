@@ -1,4 +1,4 @@
 #!/bin/bash
 #javac -cp .:bin/ src/DancingLinks.java src/Polyomino.java -d bin/
 #javac -cp .:bin/ src/* -d bin/
-javac -cp .:bin/ src/*.java -d bin/
+javac -cp .:bin/ src/*.java -d bin/ &
