@@ -40,13 +40,13 @@ public class Main {
 				Test.GenericECExample();
 				break;
 			case 9:
-				Test.ExactcoverExample();
+				Test.TextualECExample();
 				break;
 			case 10:
-				Test.DancingLinks();
+				Test.TextualDancingLinks();
 				break;
 			case 11:
-				Test.DancingLinksImage();
+				Test.DancingLinks();
 				break;
 			case 12:
 				Test.countDilateFixed(4, 3);

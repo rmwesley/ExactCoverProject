@@ -17,7 +17,6 @@ import java.util.Random;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.Polygon;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
@@ -129,33 +128,6 @@ public class Polyomino extends JComponent {
 		size.width += 2*strokeSize;
 		size.height += 2*strokeSize;
 		return size;
-	}
-	// Determines the coordinates of the
-	// vertices of the tiles composing the polyomino
-	public HashSet<Polygon> getPolygons() {
-		return this.getPolygons(new Point(this.bounds.getLocation()));
-	}
-	// Determines the coordinates of the vertices of the tiles
-	// composing the polyomino relative to a new center
-	public HashSet<Polygon> getPolygons(Point center) {
-		HashSet<Polygon> polygons = new HashSet<Polygon>();
-		Polygon currTile = new Polygon();
-		Point vertex = new Point();
-
-		for(Point p : this.tiles){
-			currTile = new Polygon();
-			vertex = new Point(2*(p.x - this.bounds.x + center.x),
-					2*(p.y - this.bounds.y + center.y));
-			currTile.addPoint(vertex.x, vertex.y);
-			vertex.translate(0, 1);
-			currTile.addPoint(vertex.x, vertex.y);
-			vertex.translate(1, 0);
-			currTile.addPoint(vertex.x, vertex.y);
-			vertex.translate(0, -1);
-			currTile.addPoint(vertex.x, vertex.y);
-			polygons.add(currTile);
-		}
-		return polygons;
 	}
 
 	// Stretches a polyomino by a factor f in the X direction

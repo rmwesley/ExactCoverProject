@@ -30,36 +30,34 @@ public abstract class Test {
 		System.out.println("Approximately "+ (endTime - startTime)/1000000000 + " s");
 	}
 
-	static void minimalPolygon(){
-		Image2d img = new Image2d();
-		int[] x = new int[3],y = new int[3];
-		y[1]=50;
-		x[2]=50;
-		img.addColoredPolygon(new Polygon(x,y,3), new Color(0,0,0));
-		new Image2dViewer(img);
-	}
 	// This function prints what is contained in the file 'INF421'
 	static void inf421printer() {
-		Image2dViewer frame = new Image2dViewer();	
-		Polyomino[] polyominoes = Polyomino.fileReader("assets/Figure2.txt");
-		frame.addPolyominoes(polyominoes, new Point(2,0));
+		CustomJFrame frame = new CustomJFrame();	
+		Polyomino[] polyominoes =
+			Polyomino.fileReader("assets/Figure2.txt");
+		for (int i=0; i < polyominoes.length; i++){
+			frame.add(polyominoes[i]);
+		}
+		frame.pack();
+		frame.setVisible(true);
+		//frame.add(polyominoes, new Point(2,0));
 	}
 
 	// This function uses the naive algorithm to represent all fixed polyominoes of size n for a given n
 	static void fixedGenerator(int n) {
-		Image2dViewer frame = new Image2dViewer();	
+		CustomJFrame frame = new CustomJFrame();	
 		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFixed(n);
 		Point center = new Point(2,10);
-		frame.addPolyominoes(polyominoes, center);
+		frame.add(polyominoes);
 	}
 
 	// This function prints the free polyominoes using the naive algorithm
 	static void freeGenerator(int n) {
-		Image2dViewer frame = new Image2dViewer();	
+		CustomJFrame frame = new CustomJFrame();	
 		frame.setPreferredSize(new Dimension(500,500));
 		HashSet<Polyomino> polyominoes = Polyomino.naiveGenerateFree(n);
 		Point center = new Point(2,10);
-		frame.addPolyominoes(polyominoes, center);
+		frame.add(polyominoes);
 		frame.revalidate();
 		frame.repaint();
 	}
@@ -77,18 +75,9 @@ public abstract class Test {
 		}
 		ECPolyomino problem = new ECPolyomino(bigP, pieces);
 
-		Image2dViewer frame = new Image2dViewer();
+		CustomJFrame frame = new CustomJFrame();
 		for (HashSet<Polyomino> solution :  problem.covers(true, 0)){
-			Image2d component = new Image2d();
-			component.addPolyominoes(solution, "random");
-			//Image2d component = new Image2d();
-
-			//for (Polyomino polyomino : solution){
-			//	polyomino.randomColor();
-			//	solution.add(polyomino);
-			//	component.addPolyomino(polyomino);
-			//}
-			frame.add(component);
+			frame.add(new JoinedPolyominoes(solution, "random"));
 		}
 		frame.pack();
 		frame.setVisible(true);
@@ -108,11 +97,9 @@ public abstract class Test {
 
 		ECPolyomino problem = new ECPolyomino(bigP, pieces);
 
-		Image2dViewer frame = new Image2dViewer();
+		CustomJFrame frame = new CustomJFrame();
 		for (HashSet<Polyomino> solution : problem.covers(true, 0)){
-			Image2d component = new Image2d();
-			component.addPolyominoes(solution, "random");
-			frame.add(component);
+			frame.add(new JoinedPolyominoes(solution, "random"));
 		}
 		frame.pack();
 		frame.setVisible(true);
@@ -123,9 +110,9 @@ public abstract class Test {
 		Polyomino bigP = p.dilateBy(3);
 		HashSet<Polyomino> equivalent = p.getEquivalent();
 
-		//Image2dViewer frame =
-		//	new Image2dViewer(bigP.draw(new Point()));
-		//frame.addPolyominoes(equivalent, new Point(0, 6));
+		//CustomJFrame frame =
+		//	new CustomJFrame(bigP.draw(new Point()));
+		//frame.add(equivalent, new Point(0, 6));
 		HashSet<Polyomino> pieces = new HashSet<Polyomino>();
 		for (Polyomino temp : equivalent){
 			pieces.addAll(temp.getFittings(bigP));
@@ -133,7 +120,7 @@ public abstract class Test {
 
 		GenericsEC<Point> problem = bigP.getEC(pieces);
 
-		Image2dViewer frame = new Image2dViewer();
+		CustomJFrame frame = new CustomJFrame();
 		for (HashSet<HashSet<Point>> solution :  problem.covers(true)){
 			Image2d component = new Image2d();
 			HashSet<Polyomino> polyominoesSol =	new HashSet<Polyomino>();
@@ -142,17 +129,15 @@ public abstract class Test {
 				Polyomino temp = new Polyomino(tiles);
 				temp.randomColor();
 				polyominoesSol.add(temp);
-
-				component.addPolyomino(temp);
 			}
-			frame.add(component);
+			frame.add(new JoinedPolyominoes(polyominoesSol));
 		}
 		frame.pack();
 		frame.setVisible(true);
 	}
 
 	// A test for the exact cover problem
-	static void ExactcoverExample() throws Exception {
+	static void TextualECExample() throws Exception {
 		HashSet<HashSet<Node>> NodeList = new HashSet<HashSet<Node>>();
 
 		int[][] matrix = new int[6][7];
@@ -170,7 +155,8 @@ public abstract class Test {
 
 		// Naive solution:
 		long startTime = System.nanoTime();
-		HashSet<HashSet<Integer>> Solutions = ExactCover.cover(new int[matrix[0].length], matrix);
+		HashSet<HashSet<Integer>> Solutions =
+			ExactCover.cover(new int[matrix[0].length], matrix);
 		long endTime = System.nanoTime();
 		System.out.println("Took "+ (endTime - startTime) + " ns");
 
@@ -198,7 +184,7 @@ public abstract class Test {
 	}
 
 	// A test of the Dancing links algorithm
-	static void DancingLinks() throws Exception{
+	static void TextualDancingLinks() throws Exception{
 		HashSet<HashSet<Node>> NodeList = new HashSet<HashSet<Node>>();
 
 		int[][] matrix = new int[6][7];
@@ -245,7 +231,7 @@ public abstract class Test {
 		}
 		System.out.println("\nNumber of solutions: " + NodeList.size());
 	}
-	static void DancingLinksImage() throws Exception{
+	static void DancingLinks() throws Exception{
 		Polyomino bigP = new Polyomino("[(0,0)]");
 
 		//bigP = bigP.stretchX(4);
@@ -265,18 +251,15 @@ public abstract class Test {
 
 		Column column = new Column(bigP.getECMatrix(pieces));
 
-		Image2dViewer frame = new Image2dViewer();
+		CustomJFrame frame = new CustomJFrame();
 		for (HashSet<Node> solution : column.exactCover()){
 			HashSet<Polyomino> solutionPolyominoes =
 			   new HashSet<Polyomino>();
-			Image2d component = new Image2d();
 
 			for (Node node : solution){
 				solutionPolyominoes.add(pieces.get(node.getRowNumber()));
 			}
-
-			component.addPolyominoes(solutionPolyominoes, "random");
-			frame.add(component);
+			frame.add(new JoinedPolyominoes(solutionPolyominoes, "random"));
 		}
 		frame.pack();
 		frame.setVisible(true);
@@ -310,26 +293,29 @@ public abstract class Test {
 	public static void countDilateFixed(int n, int k) {
 		LinkedList<HashSet<Polyomino>> polyominoes =
 			Polyomino.dilateCoverFixed(n, k);
-		System.out.print("There are " + polyominoes.size() + " fixed polyominoes of size " + n + " that cover their " + k + "-dilation");
+		System.out.println("\nThere are " + polyominoes.size()
+				+ " fixed polyominoes of size " + n
+				+ " that cover their " + k + "-dilation");
 	}
 
 	// Function that counts for n and k all the polyominoes of size n that can cover their own dilate by k, without rotations and symmetries
 	public static void countDilateFree(int n, int k) {
 		LinkedList<HashSet<Polyomino>> polyominoes =
 			Polyomino.dilateCoverFree(n, k);
-		System.out.print("There are " + polyominoes.size() + " free polyominoes of size " + n + " that cover their " + k + "-dilation");
+		System.out.println("\nThere are " + polyominoes.size()
+				+ " free polyominoes of size " + n
+				+ " that cover their " + k + "-dilation");
 	}
 
 	// Function that determines for n, and k all the polyominoes of size n that can cover their own k-dilation, and represents them
 	public static void dilateRepresentFixed(int n, int k) {
-		Image2dViewer frame = new Image2dViewer();
+		CustomJFrame frame = new CustomJFrame();
 		LinkedList<HashSet<Polyomino>> coverings =
 			Polyomino.dilateCoverFixed(n, k);
 
 		for (HashSet<Polyomino> solution : coverings){
-			Image2d component = new Image2d();
-			component.addPolyominoes(solution, "random");
-			frame.add(component);
+			//frame.add(solution);
+			frame.add(new JoinedPolyominoes(solution, "random"));
 		}
 		frame.pack();
 		frame.setVisible(true);
@@ -337,14 +323,12 @@ public abstract class Test {
 
 	// Function that determines for n, and k all the polyominoes of size n that can cover their own k-dilation, and represents them
 	public static void dilateRepresentFree(int n, int k) {
-		Image2dViewer frame = new Image2dViewer();
+		CustomJFrame frame = new CustomJFrame();
 		LinkedList<HashSet<Polyomino>> coverings =
 			Polyomino.dilateCoverFree(n, k);
 
 		for (HashSet<Polyomino> solution : coverings){
-			Image2d component = new Image2d();
-			component.addPolyominoes(solution, "random");
-			frame.add(component);
+			frame.add(new JoinedPolyominoes(solution, "random"));
 		}
 		frame.pack();
 		frame.setVisible(true);
