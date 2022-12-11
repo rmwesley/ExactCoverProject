@@ -1,12 +1,6 @@
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import java.awt.Color;
-//import java.awt.Point;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Polygon;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,14 +14,28 @@ import java.util.Collection;
 
 import java.util.Random;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Polygon;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.BasicStroke;
+
+import java.awt.geom.Area;
+
+import javax.swing.JComponent;
+
 //The class Polyomino, the heart of the subject
-public class Polyomino {
+public class Polyomino extends JComponent {
 
 	public HashSet<Point> tiles; // Set of tiles of the Polyomino
 	public int n; // Number of tiles in the polyomino
 	public Rectangle bounds; // Rectangle with bounds of the polyomino
 	public Color color;
 	private static Random random = new Random(0);
+	public static int scaling = 20;
+	public static float strokeSize = 5;
 
 	// Initializes an empty Polyomino
 	public Polyomino() {
@@ -91,6 +99,37 @@ public class Polyomino {
 		this.addTile(new Point(v[0], v[1]));
 	}
 
+	public Area getArea(){
+		Area surface = new Area();
+		Dimension tileSize = new Dimension(1, 1);
+		for(Point p : this.tiles){
+			surface.add(new Area(new Rectangle(p, tileSize)));
+		}
+		return surface;
+	}
+	public void paintComponent(Graphics g){
+		Graphics2D g2 = (Graphics2D) g;
+
+		g2.translate(strokeSize, getHeight() - strokeSize);
+		g2.scale(scaling, -scaling);
+		g2.setColor(this.color);
+		g2.fill(this.getArea());
+		g2.setColor(Color.BLACK);
+		g2.setStroke(new BasicStroke((float) strokeSize/scaling));
+		g2.draw(this.getArea());
+	}
+	@Override
+	public Dimension getPreferredSize(){
+		Dimension size = bounds.getSize();
+		size.width += 1;
+		size.height += 1;
+		size.width *= scaling;
+		size.height *= scaling;
+
+		size.width += 2*strokeSize;
+		size.height += 2*strokeSize;
+		return size;
+	}
 	// Determines the coordinates of the
 	// vertices of the tiles composing the polyomino
 	public HashSet<Polygon> getPolygons() {
@@ -534,13 +573,13 @@ public class Polyomino {
 		}
 		return max;
 	}
-	// Draws a Polyomino in a new Image2d component
-	public Image2d draw(Point center){
-		return new Image2d(this, center);
-	}
 	// Adds a Polyomino drawing to a new container
-	public void show(){
-		new Image2dViewer(this.draw(new Point(0, 0)));
+	public Image2dViewer showThis(){
+		Image2dViewer frame = new Image2dViewer();
+		frame.add(this);
+		frame.pack();
+		frame.setVisible(true);
+		return frame;
 	}
 
 	// Returns, for a given n and k, all the polyominoes of size n that can cover their k-dilation (with rotation)
