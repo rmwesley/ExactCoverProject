@@ -2,11 +2,11 @@
 
 ## Script tooling description
 To be exempt of the need of Eclipse or any IDE on Linux,
-simple building and running bash shell scripts were provided.
-For example the script `run` executes the Main class.
+simple building and running bash shell scripts were provided in the `scripts/` dir.
+For example the script `./scripts/run` executes the Main class.
 It even redirects the parameters passed to it to Main.
 The parameters are supposed to be the numbers of the different tests.
-For example, `./run 0 4` or `sh run 0 4` runs the 0th and 4th tests.
+For example, `./scripts/run 0 4` or `sh scripts/run 0 4` runs the 0th and 4th tests.
 There are many test examples provided in the Test class to play with.
 
 ## Maven tooling description
