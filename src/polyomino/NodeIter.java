@@ -1,3 +1,5 @@
+package polyomino;
+
 public class NodeIter implements java.util.Iterator<Node>{
 	private Node head;
 	private Node current;

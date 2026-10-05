@@ -1,3 +1,4 @@
+package polyomino;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -147,7 +148,7 @@ public class Column extends Node {
 
 	// Return a set of all Solutions to the problem,
 	// where each solution comprises a set of nodes
-	HashSet<HashSet<Node>> exactCover() {
+	public HashSet<HashSet<Node>> exactCover() {
 		HashSet<HashSet<Node>> setOfSolutions =
 		   	new HashSet<HashSet<Node>>();
 

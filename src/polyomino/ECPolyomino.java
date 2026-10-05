@@ -1,3 +1,4 @@
+package polyomino;
 import java.util.HashSet;
 
 public class ECPolyomino {

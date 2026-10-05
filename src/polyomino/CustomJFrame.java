@@ -1,10 +1,13 @@
+package polyomino;
+
 import javax.swing.JFrame;
+
 //import javax.swing.ScrollPaneLayout;
 import java.awt.FlowLayout;
 //import java.awt.Point;
 
 //Frame for the vizualization
-class CustomJFrame extends JFrame {
+public class CustomJFrame extends JFrame {
 
 	private static final long serialVersionUID = -7498525833438154949L;
 

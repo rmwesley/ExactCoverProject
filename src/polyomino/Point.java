@@ -1,3 +1,5 @@
+package polyomino;
+
 public class Point extends java.awt.Point
 {
 	public Point(){

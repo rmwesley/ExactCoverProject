@@ -1,3 +1,5 @@
+package polyomino;
+
 public class Node implements Iterable<Node> {
 	private Node up;
 	private Node down;

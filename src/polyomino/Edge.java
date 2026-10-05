@@ -1,5 +1,6 @@
-
+package polyomino;
 // an Edge is simply a segment : it begins in x, ends in y, and has a given width
+
 public class Edge {
 	
 	int x1;

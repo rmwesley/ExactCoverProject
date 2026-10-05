@@ -1,3 +1,5 @@
+package polyomino;
+
 import javax.swing.JComponent;
 
 import java.util.HashSet;

@@ -1,8 +1,8 @@
 // File provided by Polytechnique's INF421 course by professor Vincent Pilaud
-// With Image2d() constructor by Wesley
+// Edge class removed by Wesley
+package polyomino;
 
-import java.awt.Color;
-import java.awt.Polygon;
+import java.awt.*;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -16,20 +16,6 @@ class ColoredPolygon {
 	}
 
 }
-
-// class Edge {
-// 	int x1, y1, x2, y2;
-// 	int width;
-
-// 	public Edge(int x1, int y1, int x2, int y2, int width) {
-// 		super();
-// 		this.x1 = x1;
-// 		this.y1 = y1;
-// 		this.x2 = x2;
-// 		this.y2 = y2;
-// 		this.width = width;
-// 	}
-// }
 
 // Manipulation for images
 public class Image2d {
@@ -45,10 +31,6 @@ public class Image2d {
 		this.height = height;
 		coloredPolygons = Collections.synchronizedList(new LinkedList<ColoredPolygon>());
 		edges = Collections.synchronizedList(new LinkedList<Edge>());
-	}
-
-	public Image2d() {
-		this(400, 600);
 	}
 
 	// Return the width of the image

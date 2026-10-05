@@ -1,3 +1,5 @@
+package polyomino;
+
 import java.util.HashSet;
 
 public class GenericsEC<E> {

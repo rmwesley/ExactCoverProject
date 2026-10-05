@@ -9,6 +9,17 @@ The parameters are supposed to be the numbers of the different tests.
 For example, `./run 0 4` or `sh run 0 4` runs the 0th and 4th tests.
 There are many test examples provided in the Test class to play with.
 
+## Maven tooling description
+Build with:
+```bash
+maven compile -f pom.xml
+```
+The `exec-maven-plugin` plugin was added to enable the execution of the Main class with Maven commands.
+Execute Main class with:
+```bash
+maven exec:java -f "c:\code\exact_cover_cli\pom.xml"
+```
+
 ## Project Description
 This is a Student project by professor **Vincent Pilaud**
 who taught us Polytechnique's **INF421** course.

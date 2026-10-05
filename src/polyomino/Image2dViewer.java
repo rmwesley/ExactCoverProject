@@ -1,4 +1,5 @@
 // File provided by Polytechnique's INF421 course by professor Vincent Pilaud
+package polyomino;
 
 import javax.swing.JFrame;
 

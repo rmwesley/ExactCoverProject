@@ -5,6 +5,18 @@ import java.awt.Dimension;
 
 import java.util.HashSet;
 import java.util.LinkedList;
+
+import polyomino.Column;
+import polyomino.CustomJFrame;
+import polyomino.ECPolyomino;
+import polyomino.ExactCover;
+import polyomino.GenericsEC;
+import polyomino.Image2d;
+import polyomino.JoinedPolyominoes;
+import polyomino.Node;
+import polyomino.Point;
+import polyomino.Polyomino;
+
 import java.util.ArrayList;
 
 // Here we defined some test funtions, which can be used to make tests.
@@ -122,7 +134,6 @@ public abstract class Test {
 
 		CustomJFrame frame = new CustomJFrame();
 		for (HashSet<HashSet<Point>> solution :  problem.covers(true)){
-			Image2d component = new Image2d();
 			HashSet<Polyomino> polyominoesSol =	new HashSet<Polyomino>();
 
 			for (HashSet<Point> tiles : solution){
