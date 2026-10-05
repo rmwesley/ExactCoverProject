@@ -1,4 +1,6 @@
-# INF421-Exact-Cover
+# INF421-Exact-Cover - Wesley's solution
+
+## Script tooling description
 To be exempt of the need of Eclipse or any IDE on Linux,
 simple building and running bash shell scripts were provided.
 For example the script `run` executes the Main class.
@@ -7,6 +9,7 @@ The parameters are supposed to be the numbers of the different tests.
 For example, `./run 0 4` or `sh run 0 4` runs the 0th and 4th tests.
 There are many test examples provided in the Test class to play with.
 
+## Project Description
 This is a Student project by professor **Vincent Pilaud**
 who taught us Polytechnique's **INF421** course.
 
